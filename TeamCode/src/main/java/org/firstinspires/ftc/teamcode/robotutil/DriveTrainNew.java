@@ -136,34 +136,35 @@ public class DriveTrainNew {
 
         Motors.useEncoders(driveMotors);
     }
-    private int headingCCWError(int start, int turn, int current ) {
 
-        int offset;
-        int target;
-
-        offset = 270 - start;
-        target = start - turn + offset;
-        current += offset;
-        if ( current >=360 ) {
-            current-=360;
-        } // avoid wrap around problem
-        return target - current;
-
-    }
-
-    private int headingCWError(int start, int turn, int current ) {
-
-        int offset;
-        int target;
-
-        offset = 90 - start;
-        target = start + turn + offset;
-        current += offset;
-        if ( current < 0 ) {
-            current+=360;
-        } // avoid wrap around problem
-        return target - current;
-    }
+//    private int headingCCWError(int start, int turn, int current ) {
+//
+//        int offset;
+//        int target;
+//
+//        offset = 270 - start;
+//        target = start - turn + offset;
+//        current += offset;
+//        if ( current >=360 ) {
+//            current-=360;
+//        } // avoid wrap around problem
+//        return target - current;
+//
+//    }
+//
+//    private int headingCWError(int start, int turn, int current ) {
+//
+//        int offset;
+//        int target;
+//
+//        offset = 90 - start;
+//        target = start + turn + offset;
+//        current += offset;
+//        if ( current < 0 ) {
+//            current+=360;
+//        } // avoid wrap around problem
+//        return target - current;
+//    }
 
 
 //    public double rotateIMU(double degrees,Direction direction, double power, double timeoutS, Telemetry telemetry) throws Exception{
@@ -180,5 +181,48 @@ public class DriveTrainNew {
 //
 //
 //    }
+
+    // Untested proportional IMU rotation
+    public void rotateIMU(Direction direction, double angle, double power, double allowedError, double timeoutS) {
+        double currentHeading = imu.getAngle(Axis.HEADING);
+        double targetHeading;
+
+        switch (direction) {
+            case CW:
+                targetHeading = currentHeading + angle;
+                break;
+            case CCW:
+                targetHeading = currentHeading - angle;
+                break;
+            default:
+                targetHeading = currentHeading;
+        }
+        targetHeading = fixAngle(targetHeading);
+
+        double error = getError(currentHeading, targetHeading);
+        double startTime = System.currentTimeMillis();
+
+        while (error > allowedError && (System.currentTimeMillis() - startTime) / 1000 < timeoutS) {
+            double proportionalPower = power * error / 180;
+            this.rotate(Direction.CW, RotateMethod.SPIN, proportionalPower);
+
+            currentHeading = imu.getAngle(Axis.HEADING);
+            error = getError(currentHeading, targetHeading);
+        }
+
+        this.setPowers(0, 0);
+    }
+
+    // Get angle between -180 and 180
+    private double fixAngle(double angle) {
+        while (angle > 180 || angle < -180) {
+            angle += (angle < 180) ? 360 : -360;
+        }
+        return angle;
+    }
+
+    private double getError(double currentHeading, double targetHeading) {
+        return Math.abs(fixAngle(targetHeading - currentHeading));
+    }
 
 }
