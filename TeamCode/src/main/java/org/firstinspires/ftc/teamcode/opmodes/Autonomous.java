@@ -21,7 +21,7 @@ public class Autonomous extends LinearOpMode {
         waitForStart();
 
         if (opModeIsActive()) {
-            alignWithGold();
+            alignWithGold(1);
             // Drive forward
         }
     }
