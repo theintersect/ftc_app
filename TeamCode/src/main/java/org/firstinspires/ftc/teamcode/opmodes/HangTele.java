@@ -34,14 +34,14 @@ package org.firstinspires.ftc.teamcode.opmodes;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.teamcode.tasks.DriveTrainTask;
+import org.firstinspires.ftc.teamcode.tasks.DriveTrainTaskMecanum;
 import org.firstinspires.ftc.teamcode.tasks.HangTask;
 
 @com.qualcomm.robotcore.eventloop.opmode.TeleOp(name = "Hang Teleop")
 
 public class HangTele extends LinearOpMode {
     private HangTask hangTask;
-    private DriveTrainTask driveTrainTask;
+    private DriveTrainTaskMecanum driveTrainTask;
 
     public void runOpMode() throws InterruptedException{
         initialize();
@@ -59,7 +59,7 @@ public class HangTele extends LinearOpMode {
 
     private void initialize(){
         hangTask = new HangTask(this);
-        driveTrainTask = new DriveTrainTask(this);
+        driveTrainTask = new DriveTrainTaskMecanum(this);
     }
 
 

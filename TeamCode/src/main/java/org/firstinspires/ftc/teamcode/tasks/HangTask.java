@@ -25,9 +25,9 @@ public class HangTask extends TaskThread {
         double power = 1.0;
 
         while (opMode.opModeIsActive() && this.running) {
-            if (opMode.gamepad1.a) {
+            if (opMode.gamepad2.dpad_up) {
                 slides.setPower(power);
-            } else if (opMode.gamepad1.b) {
+            } else if (opMode.gamepad2.dpad_down) {
                 slides.setPower(-1 * power);
             } else {
                 slides.setPower(0);

@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 
 public class Motors {
 
+
     public static void useEncoders(DcMotor[] motorArray){
         for(DcMotor motor : motorArray){
             motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -37,6 +38,12 @@ public class Motors {
     public static void runToPosition(DcMotor[] motorArray){
         for(DcMotor motor: motorArray) {
             motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        }
+    }
+
+    public static void stopAll(DcMotor[] motorArray){
+        for(DcMotor motor : motorArray){
+            motor.setPower(0);
         }
     }
 
