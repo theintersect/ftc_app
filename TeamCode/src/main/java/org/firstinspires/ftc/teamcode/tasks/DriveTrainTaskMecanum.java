@@ -49,13 +49,18 @@ public class DriveTrainTaskMecanum extends TaskThread {
             lB.setPower(backLeft);
             rB.setPower(backRight);
 
+            opMode.telemetry.addData("Robot angle: " ,robotAngle);
+            opMode.telemetry.addData("Right X: " ,rightX);
+            opMode.telemetry.addData("Hypot: " ,r);
+            opMode.telemetry.addData("Multiplier: ",slowMultiplier);
+
             opMode.telemetry.addData("LF: " ,frontLeft*100);
             opMode.telemetry.addData("RF: " ,frontLeft*100);
             opMode.telemetry.addData("LB: " ,frontLeft*100);
             opMode.telemetry.addData("RB: " ,frontLeft*100);
-            opMode.telemetry.addData("Multiplier: ",slowMultiplier);
 
-
+            opMode.telemetry.addData("IMU Angle: ",imu.getAngle());
+            
         }
     }
     @Override
