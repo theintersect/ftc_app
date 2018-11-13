@@ -7,17 +7,15 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.robotutil.IMU;
-/**
- * Created by Howard on 10/15/16.
- */
+
 public class DriveTrainTaskMecanum extends TaskThread {
 
     private DcMotor lF, rF, lB, rB;
     private BNO055IMU adaImu;
     private IMU imu;
+    private double r,robotAngle,rightX,frontLeft,frontRight,backLeft,backRight,slowMultiplier;
 
     ElapsedTime timer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
-    public double zeroAngle, joyStickAngle, gyroAngle;
 
     public DriveTrainTaskMecanum(LinearOpMode opMode) {
         this.opMode = opMode;
@@ -29,18 +27,25 @@ public class DriveTrainTaskMecanum extends TaskThread {
     public void run() {
         timer.reset();
         while (opMode.opModeIsActive() && running) {
-            double r = Math.hypot(opMode.gamepad1.left_stick_x, opMode.gamepad1.left_stick_y);
-            double robotAngle = Math.atan2(opMode.gamepad1.left_stick_y, opMode.gamepad1.left_stick_x) - Math.PI / 4;
-            double rightX = -opMode.gamepad1.right_stick_x;
-            final double frontLeft = r * Math.cos(robotAngle) + rightX;
-            final double frontRight = r * Math.sin(robotAngle) - rightX;
-            final double backLeft = r * Math.sin(robotAngle) + rightX;
-            final double backRight = r * Math.cos(robotAngle) - rightX;
+            r = Math.hypot(opMode.gamepad1.left_stick_x, opMode.gamepad1.left_stick_y);
+            robotAngle = Math.atan2(opMode.gamepad1.left_stick_y, opMode.gamepad1.left_stick_x) - Math.PI / 4;
+            rightX = -opMode.gamepad1.right_stick_x;
+            frontLeft = r * Math.cos(robotAngle) + rightX;
+            frontRight = r * Math.sin(robotAngle) - rightX;
+            backLeft = r * Math.sin(robotAngle) + rightX;
+            backRight = r * Math.cos(robotAngle) - rightX;
+            
+            if(opMode.gamepad1.start){
+                slowMultiplier = .3;
+            }else{
+                slowMultiplier = 1;
+            }
 
-            lF.setPower(frontLeft);
-            rF.setPower(frontRight);
-            lB.setPower(backLeft);
-            rB.setPower(backRight);
+
+            lF.setPower(frontLeft*slowMultiplier);
+            rF.setPower(frontRight*slowMultiplier);
+            lB.setPower(backLeft*slowMultiplier);
+            rB.setPower(backRight*slowMultiplier);
 
         }
     }
