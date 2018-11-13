@@ -12,7 +12,6 @@ import org.firstinspires.ftc.teamcode.robotutil.Sweeper;
  */
 public class HangTask extends TaskThread {
     private HangSlides slides;
-    private String slideString;
 
     public HangTask(LinearOpMode opMode) {
         this.opMode = opMode;
@@ -24,6 +23,8 @@ public class HangTask extends TaskThread {
         timer.reset();
 
         double power = 1.0;
+        String slideString;
+
 
         while (opMode.opModeIsActive() && this.running) {
             if (opMode.gamepad2.dpad_up) {
