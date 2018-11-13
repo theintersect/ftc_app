@@ -45,7 +45,7 @@ public class HangTele extends LinearOpMode {
 
     public void runOpMode() throws InterruptedException{
         initialize();
-        telemetry.addData("Ready!", "");
+        telemetry.addLine("Ready!");
         telemetry.update();
         waitForStart();
         hangTask.start();

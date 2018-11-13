@@ -12,6 +12,7 @@ import org.firstinspires.ftc.teamcode.robotutil.Sweeper;
  */
 public class HangTask extends TaskThread {
     private HangSlides slides;
+    private String slideString;
 
     public HangTask(LinearOpMode opMode) {
         this.opMode = opMode;
@@ -27,11 +28,16 @@ public class HangTask extends TaskThread {
         while (opMode.opModeIsActive() && this.running) {
             if (opMode.gamepad2.dpad_up) {
                 slides.setPower(power);
+                slideString = "UP";
             } else if (opMode.gamepad2.dpad_down) {
                 slides.setPower(-1 * power);
+                slideString = "DOWN";
             } else {
                 slides.setPower(0);
+                slideString = "IDLE";
             }
+
+            opMode.telemetry.addData("Slides: ",)
         }
     }
 

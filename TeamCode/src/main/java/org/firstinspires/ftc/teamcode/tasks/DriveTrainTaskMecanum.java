@@ -30,22 +30,31 @@ public class DriveTrainTaskMecanum extends TaskThread {
             r = Math.hypot(opMode.gamepad1.left_stick_x, opMode.gamepad1.left_stick_y);
             robotAngle = Math.atan2(opMode.gamepad1.left_stick_y, opMode.gamepad1.left_stick_x) - Math.PI / 4;
             rightX = -opMode.gamepad1.right_stick_x;
-            frontLeft = r * Math.cos(robotAngle) + rightX;
-            frontRight = r * Math.sin(robotAngle) - rightX;
-            backLeft = r * Math.sin(robotAngle) + rightX;
-            backRight = r * Math.cos(robotAngle) - rightX;
-            
+
+
             if(opMode.gamepad1.start){
                 slowMultiplier = .3;
             }else{
                 slowMultiplier = 1;
             }
 
+            frontLeft = (r * Math.cos(robotAngle) + rightX)*slowMultiplier;
+            frontRight = (r * Math.sin(robotAngle) - rightX)*slowMultiplier;
+            backLeft = (r * Math.sin(robotAngle) + rightX)*slowMultiplier;
+            backRight = (r * Math.cos(robotAngle) - rightX)*slowMultiplier;
 
-            lF.setPower(frontLeft*slowMultiplier);
-            rF.setPower(frontRight*slowMultiplier);
-            lB.setPower(backLeft*slowMultiplier);
-            rB.setPower(backRight*slowMultiplier);
+
+            lF.setPower(frontLeft);
+            rF.setPower(frontRight);
+            lB.setPower(backLeft);
+            rB.setPower(backRight);
+
+            opMode.telemetry.addData("LF: " ,frontLeft*100);
+            opMode.telemetry.addData("RF: " ,frontLeft*100);
+            opMode.telemetry.addData("LB: " ,frontLeft*100);
+            opMode.telemetry.addData("RB: " ,frontLeft*100);
+            opMode.telemetry.addData("Multiplier: ",slowMultiplier);
+
 
         }
     }
