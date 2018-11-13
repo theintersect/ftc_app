@@ -44,17 +44,22 @@ public class HangTele extends LinearOpMode {
     private DriveTrainTaskMecanum driveTrainTask;
 
     public void runOpMode() throws InterruptedException{
+        telemetry.addData("STATUS","INITIALIZING");
+        telemetry.update();
         initialize();
-        telemetry.addLine("Ready!");
+        telemetry.addData("STATUS","READY");
         telemetry.update();
         waitForStart();
         hangTask.start();
         driveTrainTask.start();
         while(opModeIsActive() && !isStopRequested()) {
+            telemetry.addData("STATUS","RUNNING");
             telemetry.update();
         }
         hangTask.running = false;
         driveTrainTask.running = false;
+        telemetry.addData("STATUS","STOPPED");
+        telemetry.update();
     }
 
     private void initialize(){
