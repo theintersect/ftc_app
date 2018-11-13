@@ -37,7 +37,7 @@ public class HangTask extends TaskThread {
                 slideString = "IDLE";
             }
 
-            opMode.telemetry.addData("Slides: ",)
+            opMode.telemetry.addData("Slides: ",slideString);
         }
     }
 
