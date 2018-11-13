@@ -23,7 +23,6 @@ public class DriveTrainNew {
     private DcMotor lfDrive,lbDrive,rfDrive,rbDrive;
     private IMUNew imu;
     private LinearOpMode opMode;
-//    private DcMotor[] driveMotors;
     private MotorGroup driveMotors;
 
     public DriveTrainNew(LinearOpMode opMode) {
@@ -87,6 +86,11 @@ public class DriveTrainNew {
         }
     }
 
+    public void move(Direction direction,double power, double timeS){
+        move(direction,power);
+        
+    }
+
     public void move(Direction direction,double power,double inches,double timeoutS) {
         driveMotors.resetEncoders();
         driveMotors.useEncoders();
@@ -131,6 +135,7 @@ public class DriveTrainNew {
 
         driveMotors.runToPosition();
         timer.reset();
+
         move(direction,power);
 
         while(opMode.opModeIsActive() && (timer.time()< timeoutS*1000) && (rbDrive.isBusy() || lbDrive.isBusy() || lfDrive.isBusy() || rfDrive.isBusy())) {
