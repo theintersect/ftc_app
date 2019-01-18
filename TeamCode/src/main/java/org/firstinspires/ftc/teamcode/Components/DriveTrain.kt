@@ -11,12 +11,12 @@ import org.firstinspires.ftc.teamcode.Utils.WSS
 import org.firstinspires.ftc.teamcode.Utils.getPIDConstantsFromFile
 
 
-class DriveTrain(val opMode: LinearOpMode, val wss:WSS?=null, val rotationPIDConstants:PIDConstants= PIDConstants(1.0,1.0,1.0), val drivePIDConstants: PIDConstants = PIDConstants(1.0,1.0,1.0)){
-    val l:Logger = Logger("DRIVETRAIN2")
+class DriveTrain(val opMode: LinearOpMode, val wss: WSS? = null, val rotationPIDConstants: PIDConstants = PIDConstants(1.0, 1.0, 1.0), val drivePIDConstants: PIDConstants = PIDConstants(1.0, 1.0, 1.0)) {
+    val l: Logger = Logger("DRIVETRAIN2")
     val lfDrive = Motor(opMode.hardwareMap, "lfDrive")
     val lbDrive = Motor(opMode.hardwareMap, "lbDrive")
-    val rfDrive  = Motor(opMode.hardwareMap, "rfDrive")
-    val rbDrive  = Motor(opMode.hardwareMap, "rbDrive")
+    val rfDrive = Motor(opMode.hardwareMap, "rfDrive")
+    val rbDrive = Motor(opMode.hardwareMap, "rbDrive")
     val driveMotors = MotorGroup()
     val leftMotors = MotorGroup()
     val rightMotors = MotorGroup()
@@ -38,9 +38,9 @@ class DriveTrain(val opMode: LinearOpMode, val wss:WSS?=null, val rotationPIDCon
         leftMotors.addMotor(lfDrive)
         rightMotors.addMotor(rbDrive)
         rightMotors.addMotor(rfDrive)
-        
+
         l.log("Initialized motors")
-        l.log("Websocket initialized: ${wss!=null}")
+        l.log("Websocket initialized: ${wss != null}")
         l.log("Rotation PIO: ${rotationPIDConstants}")
         l.log("Drive PIO: ${drivePIDConstants}")
 //        initMotors()
@@ -59,21 +59,37 @@ class DriveTrain(val opMode: LinearOpMode, val wss:WSS?=null, val rotationPIDCon
 
     fun move(dir: Direction, power: Double) {
         when (dir) {
-            Direction.FORWARD -> { setPowers(power, power) }
-            Direction.BACKWARD -> { setPowers(-power, -power) }
-            Direction.SPIN_CW -> { setPowers(-power, power) }
-            Direction.SPIN_CCW -> { setPowers(power, -power) }
-            Direction.FORWARD_CCW -> { setPowers(0.0, power) }
-            Direction.FORWARD_CW -> { setPowers(power, 0.0) }
-            Direction.BACKWARD_CCW -> { setPowers(0.0, -power) }
-            Direction.BACKWARD_CW -> { setPowers(-power, 0.0) }
+            Direction.FORWARD -> {
+                setPowers(power, power)
+            }
+            Direction.BACKWARD -> {
+                setPowers(-power, -power)
+            }
+            Direction.SPIN_CW -> {
+                setPowers(-power, power)
+            }
+            Direction.SPIN_CCW -> {
+                setPowers(power, -power)
+            }
+            Direction.FORWARD_CCW -> {
+                setPowers(0.0, power)
+            }
+            Direction.FORWARD_CW -> {
+                setPowers(power, 0.0)
+            }
+            Direction.BACKWARD_CCW -> {
+                setPowers(0.0, -power)
+            }
+            Direction.BACKWARD_CW -> {
+                setPowers(-power, 0.0)
+            }
         }
     }
 
     fun drive(dir: Direction, dist: Double, timeout: Int = 10) {
         driveMotors.prepareEncoderDrive()
-        var leftPos = leftMotors.getAvgCurrentPositon()
-        var rightPos = rightMotors.getAvgCurrentPositon()
+        val leftPos = leftMotors.getAvgCurrentPositon()
+        val rightPos = rightMotors.getAvgCurrentPositon()
 
         val lTarget = leftPos +
                 dir.intRepr * Values.TICKS_PER_INCH_FORWARD * dist
@@ -98,9 +114,9 @@ class DriveTrain(val opMode: LinearOpMode, val wss:WSS?=null, val rotationPIDCon
         stopAll()
     }
 
-    fun rotate(dir: Direction, angle: Int, timeout: Int = 10,broadcast:Boolean=false) {
+    fun rotate(dir: Direction, angle: Int, timeout: Int = 10, broadcast: Boolean = false) {
         val targetHeading = fixAngle(imu.angle + dir.intRepr * angle)
-        rotateTo(targetHeading, timeout,broadcast=broadcast)
+        rotateTo(targetHeading, timeout, broadcast = broadcast)
     }
 
     fun fixAngle(angle: Double): Double {
@@ -115,11 +131,11 @@ class DriveTrain(val opMode: LinearOpMode, val wss:WSS?=null, val rotationPIDCon
         return fixedAngle
     }
 
-    fun rotateTo(targetHeading: Double, timeout: Int = 10,broadcast:Boolean=false) {
+    fun rotateTo(targetHeading: Double, timeout: Int = 10, broadcast: Boolean = false) {
         val minError = 2
         val minPower = 2.0
 
-        val pid = PIDController(rotationPIDConstants, targetHeading,broadcast=broadcast,wss=wss)
+        val pid = PIDController(rotationPIDConstants, targetHeading, broadcast = broadcast, wss = wss)
 
         var currentHeading: Double = imu.angle
 
@@ -135,7 +151,7 @@ class DriveTrain(val opMode: LinearOpMode, val wss:WSS?=null, val rotationPIDCon
 //                Math.min(proportionalPower - 0.1, -minPower)
 //            }
 
-            l.logData("P Power",proportionalPower)
+            l.logData("P Power", proportionalPower)
             move(Direction.SPIN_CW, proportionalPower)
 
             if (Math.abs(pid.prevError!!) < minError) {

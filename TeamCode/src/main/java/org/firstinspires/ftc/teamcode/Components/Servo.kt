@@ -1,10 +1,13 @@
+package org.firstinspires.ftc.teamcode.Components
+
+
 import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.HardwareMap
 import org.firstinspires.ftc.teamcode.Utils.Logger
 
 
 
-public class Servo(val hardwareMap: HardwareMap, val name:String){
+open class Servo(val hardwareMap: HardwareMap, val name:String){
     val servo = hardwareMap.servo.get(name)
     val l = Logger("SERVO", name)
     val POSITION_TO_ANGLE = 1.8; // use angle to decide position

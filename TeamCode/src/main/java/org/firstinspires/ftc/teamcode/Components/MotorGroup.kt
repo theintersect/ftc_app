@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode.Components
 import org.firstinspires.ftc.teamcode.Components.Motor
 import org.firstinspires.ftc.teamcode.Utils.Logger
 
-public class MotorGroup(){
+public open class MotorGroup(){
     var motors:ArrayList<Motor> = arrayListOf()
     val l = Logger("MOTORGROUP")
 
