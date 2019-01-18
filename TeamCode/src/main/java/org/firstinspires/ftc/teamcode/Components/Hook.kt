@@ -6,7 +6,7 @@ import org.firstinspires.ftc.teamcode.Components.Servo
 import org.firstinspires.ftc.teamcode.Utils.Logger
 
 
-public class Hook(val opMode: LinearOpMode):Servo(opMode.hardwareMap,"hookServo"){
+class Hook(val opMode: LinearOpMode):Servo(opMode.hardwareMap,"hookServo"){
 
     val servoDirection = com.qualcomm.robotcore.hardware.Servo.Direction.FORWARD
 

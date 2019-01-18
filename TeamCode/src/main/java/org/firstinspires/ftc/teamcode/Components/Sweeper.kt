@@ -4,25 +4,12 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import com.qualcomm.robotcore.hardware.DcMotorSimple
 import org.firstinspires.ftc.teamcode.Utils.Logger
 
-public class Sweeper(val opMode: LinearOpMode) {
-    val l: Logger = Logger("SWEEPER")
+class Sweeper(opMode: LinearOpMode): MotorGroup() {
 
-    val sweeper = Motor(opMode.hardwareMap, "sweeper")
+    val hwMap = opMode.hardwareMap
 
     init {
-
-        l.log("entered init")
-        sweeper.setDirection(DcMotorSimple.Direction.FORWARD)
-
+        this.addMotor(Motor(hwMap, "sweeper"))
     }
-
-    fun setPowers(power: Double) {
-        sweeper.setPower(power)
-    }
-
-    fun stopAll(coast: Boolean = false) {
-        sweeper.stop(coast)
-    }
-
 
 }
