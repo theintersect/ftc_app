@@ -8,37 +8,53 @@ import org.firstinspires.ftc.teamcode.Models.Direction
 import org.firstinspires.ftc.teamcode.Models.PIDConstants
 import org.firstinspires.ftc.teamcode.Utils.PIDController
 import org.firstinspires.ftc.teamcode.Utils.WSS
+import org.firstinspires.ftc.teamcode.Utils.getPIDConstantsFromFile
 
 
-class DriveTrain(val opMode: LinearOpMode,val wss:WSS?=null,val rotationPIDConstants:PIDConstants,val drivePIDConstants: PIDConstants){
+class DriveTrain(val opMode: LinearOpMode, val wss:WSS?=null, val rotationPIDConstants:PIDConstants= PIDConstants(1.0,1.0,1.0), val drivePIDConstants: PIDConstants = PIDConstants(1.0,1.0,1.0)){
     val l:Logger = Logger("DRIVETRAIN2")
-    val lDrive = Motor(opMode.hardwareMap, "lDrive")
-    val rDrive  = Motor(opMode.hardwareMap, "rDrive")
+    val lfDrive = Motor(opMode.hardwareMap, "lfDrive")
+    val lbDrive = Motor(opMode.hardwareMap, "lbDrive")
+    val rfDrive  = Motor(opMode.hardwareMap, "rfDrive")
+    val rbDrive  = Motor(opMode.hardwareMap, "rbDrive")
     val driveMotors = MotorGroup()
-    val imu = IMU(opMode.hardwareMap.get(BNO055IMU::class.java, "imu"))
+    val leftMotors = MotorGroup()
+    val rightMotors = MotorGroup()
+
+    val imu: IMU = IMU(opMode.hardwareMap.get(BNO055IMU::class.java, "imu"))
 
     init {
-        fun initMotors() {
-            lDrive.setDirection(DcMotorSimple.Direction.FORWARD)
-            rDrive.setDirection(DcMotorSimple.Direction.REVERSE)
-            driveMotors.addMotor(lDrive)
-            driveMotors.addMotor(rDrive)
-            l.log("Initialized motors")
-//            driveMotors.logInfo()
-        }
-        l.log("Websocket initialized: ${wss!=null}")
+        l.log("entered init")
+        lfDrive.setDirection(DcMotorSimple.Direction.FORWARD)
+        lbDrive.setDirection(DcMotorSimple.Direction.FORWARD)
+        rfDrive.setDirection(DcMotorSimple.Direction.REVERSE)
+        rbDrive.setDirection(DcMotorSimple.Direction.REVERSE)
+        driveMotors.addMotor(lfDrive)
+        driveMotors.addMotor(rfDrive)
+        driveMotors.addMotor(lbDrive)
+        driveMotors.addMotor(rbDrive)
 
-        initMotors()
+        leftMotors.addMotor(lbDrive)
+        leftMotors.addMotor(lfDrive)
+        rightMotors.addMotor(rbDrive)
+        rightMotors.addMotor(rfDrive)
+        
+        l.log("Initialized motors")
+        l.log("Websocket initialized: ${wss!=null}")
+        l.log("Rotation PIO: ${rotationPIDConstants}")
+        l.log("Drive PIO: ${drivePIDConstants}")
+//        initMotors()
     }
 
     fun setPowers(lPower: Double, rPower: Double) {
-        lDrive.setPower(lPower)
-        rDrive.setPower(rPower)
+//        rfDrive.setPower(lPower)
+        leftMotors.setPower(lPower)
+        rightMotors.setPower(rPower)
     }
 
     fun stopAll(coast: Boolean = false) {
-        lDrive.stop(coast)
-        rDrive.stop(coast)
+        leftMotors.stop(coast)
+        leftMotors.stop(coast)
     }
 
     fun move(dir: Direction, power: Double) {
@@ -56,24 +72,26 @@ class DriveTrain(val opMode: LinearOpMode,val wss:WSS?=null,val rotationPIDConst
 
     fun drive(dir: Direction, dist: Double, timeout: Int = 10) {
         driveMotors.prepareEncoderDrive()
+        var leftPos = leftMotors.getAvgCurrentPositon()
+        var rightPos = rightMotors.getAvgCurrentPositon()
 
-        val lTarget = lDrive.motor.currentPosition +
+        val lTarget = leftPos +
                 dir.intRepr * Values.TICKS_PER_INCH_FORWARD * dist
-        val rTarget = rDrive.motor.currentPosition +
+        val rTarget = rightPos +
                 dir.intRepr * Values.TICKS_PER_INCH_FORWARD * dist
         val minError = 50
 
         val lPID = PIDController(drivePIDConstants, lTarget)
         val rPID = PIDController(drivePIDConstants, rTarget)
 
-        lPID.initController(lDrive.motor.currentPosition.toDouble())
-        rPID.initController(rDrive.motor.currentPosition.toDouble())
+        lPID.initController(leftPos)
+        rPID.initController(rightPos)
 
         while (opMode.opModeIsActive() && !opMode.isStopRequested &&
                 lPID.prevError!! > minError && rPID.prevError!! > minError) {
             setPowers(
-                    lPID.output(lDrive.motor.currentPosition.toDouble()),
-                    rPID.output(rDrive.motor.currentPosition.toDouble())
+                    lPID.output(leftMotors.getAvgCurrentPositon()),
+                    rPID.output(rightMotors.getAvgCurrentPositon())
             )
         }
 

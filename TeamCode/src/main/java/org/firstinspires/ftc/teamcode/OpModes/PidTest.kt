@@ -12,24 +12,31 @@ import org.firstinspires.ftc.teamcode.Utils.getPIDConstantsFromFile
 
 class  PidTest: LinearOpMode(){
     val l: Logger = Logger("PID Test")
-    val pid: PIDConstants = getPIDConstantsFromFile("pid_rotation.json")
+    val pidRotation: PIDConstants = getPIDConstantsFromFile("pid_rotation.json")
+    val pidDrive: PIDConstants = getPIDConstantsFromFile("pid_drive.json")
+
     init{
         l.log("Initialized")
-        telemetry.addData("PID",pid.toString())
-        l.log(pid.toString())
+//        telemetry.addData("PID R",pidRotation.toString())
+//        telemetry.addData("PID D",pidDrive.toString())
+
+        l.log(pidRotation.toString())
+        l.log(pidDrive.toString())
+
     }
 
+
     override fun runOpMode() {
-        val dt = DriveTrain(this)
+
         l.log("waiting for start")
         telemetry.update()
-//        val wss = WSS(port=3000,path="/pid")
-//        wss.start()
+        val dt = DriveTrain(this,drivePIDConstants = pidDrive, rotationPIDConstants = pidRotation)
         waitForStart()
+
         l.log("Opmode Started")
         if(opModeIsActive() && !isStopRequested){
             l.log("Starting turn")
-            dt.rotate(Direction.SPIN_CCW,90,10,broadcast=false,pidConstants = pid)
+            dt.rotate(Direction.SPIN_CCW,90,10,broadcast=false)
             l.log("Finished turn")
         }
 

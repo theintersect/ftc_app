@@ -8,6 +8,10 @@ class Motor(val hardwareMap: HardwareMap,val motorName:String ){
     val motor = hardwareMap.dcMotor.get(motorName)
     val l = Logger("MOTOR", motorName)
 
+    init {
+        l.log("Motor created")
+    }
+
     fun setPower(power:Double){
         motor.power = power
     }

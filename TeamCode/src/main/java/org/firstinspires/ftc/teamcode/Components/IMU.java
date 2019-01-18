@@ -7,13 +7,17 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.Quaternion;
+import org.firstinspires.ftc.teamcode.Utils.Logger;
 
 //import com.qualcomm.hardware.adafruit.JustLoggingAccelerationIntegrator;
 
 public class IMU {
     public BNO055IMU adafruit;
     private Orientation angles;
+    private Logger l;
     public IMU(BNO055IMU adafruit){
+        l = new Logger("IMU");
+        l.log("IMU initializing");
         this.adafruit = adafruit;
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
@@ -23,6 +27,7 @@ public class IMU {
         parameters.loggingTag          = "IMU";
         //parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
         adafruit.initialize(parameters);
+        l.log("IMU initialized");
     }
     public double getAngle(){
         angles = adafruit.getAngularOrientation().toAxesReference(AxesReference.INTRINSIC).toAxesOrder(AxesOrder.ZYX);
