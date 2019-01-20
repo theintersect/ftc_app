@@ -10,7 +10,7 @@ import org.firstinspires.ftc.teamcode.Utils.Logger
 open class Servo(val hardwareMap: HardwareMap, val name:String){
     val servo = hardwareMap.servo.get(name)
     val l = Logger("SERVO", name)
-    val POSITION_TO_ANGLE = 1.8; // use angle to decide position
+    val POSITION_TO_ANGLE = 180.0; // use angle to decide position
     var INIT_ANGLE = 90
     var MAX_POSITION = 180
     var MIN_ANGLE = 0
@@ -18,6 +18,7 @@ open class Servo(val hardwareMap: HardwareMap, val name:String){
 
     fun setPosition(angle:Int,blockUntilFinished:Boolean=false){
         val targetPosition = angle/POSITION_TO_ANGLE
+//        l.logData("POSITION", targetPosition)
         servo.position = targetPosition
         if(blockUntilFinished){
             while(Math.abs(servo.position-targetPosition) < POSITION_BLOCKING_THRESHOLD){

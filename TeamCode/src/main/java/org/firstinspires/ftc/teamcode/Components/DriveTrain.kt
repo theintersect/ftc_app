@@ -2,13 +2,11 @@ package org.firstinspires.ftc.teamcode.Components
 
 import com.qualcomm.hardware.bosch.BNO055IMU
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
+import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.DcMotorSimple
-import org.firstinspires.ftc.teamcode.Utils.Logger
 import org.firstinspires.ftc.teamcode.Models.Direction
 import org.firstinspires.ftc.teamcode.Models.PIDConstants
-import org.firstinspires.ftc.teamcode.Utils.PIDController
-import org.firstinspires.ftc.teamcode.Utils.WSS
-import org.firstinspires.ftc.teamcode.Utils.getPIDConstantsFromFile
+import org.firstinspires.ftc.teamcode.Utils.*
 
 
 class DriveTrain(val opMode: LinearOpMode, val wss: WSS? = null, val rotationPIDConstants: PIDConstants = PIDConstants(1.0, 1.0, 1.0), val drivePIDConstants: PIDConstants = PIDConstants(1.0, 1.0, 1.0)) {
@@ -22,6 +20,8 @@ class DriveTrain(val opMode: LinearOpMode, val wss: WSS? = null, val rotationPID
     val rightMotors = MotorGroup()
 
     val imu: IMU = IMU(opMode.hardwareMap.get(BNO055IMU::class.java, "imu"))
+    val MAX_POWER = 0.5
+
 
     init {
         l.log("entered init")
@@ -45,16 +45,24 @@ class DriveTrain(val opMode: LinearOpMode, val wss: WSS? = null, val rotationPID
         l.log("Drive PIO: ${drivePIDConstants}")
 //        initMotors()
     }
+    fun normalizePower(input:Double):Double{
+//        if (input < 0) {
+//            return Math.max(input, -MAX_POWER)
+//        } else {
+//            return Math.min(input, MAX_POWER)
+//        }
 
+        return input
+    }
     fun setPowers(lPower: Double, rPower: Double) {
 //        rfDrive.setPower(lPower)
-        leftMotors.setPower(lPower)
-        rightMotors.setPower(rPower)
+        leftMotors.setPower(normalizePower(lPower))
+        rightMotors.setPower(normalizePower(rPower))
     }
 
     fun stopAll(coast: Boolean = false) {
         leftMotors.stop(coast)
-        leftMotors.stop(coast)
+        rightMotors.stop(coast)
     }
 
     fun move(dir: Direction, power: Double) {
@@ -88,31 +96,62 @@ class DriveTrain(val opMode: LinearOpMode, val wss: WSS? = null, val rotationPID
 
     fun drive(dir: Direction, dist: Double, timeout: Int = 10) {
         driveMotors.prepareEncoderDrive()
-        val leftPos = leftMotors.getAvgCurrentPositon()
-        val rightPos = rightMotors.getAvgCurrentPositon()
 
-        val lTarget = leftPos +
-                dir.intRepr * Values.TICKS_PER_INCH_FORWARD * dist
-        val rTarget = rightPos +
-                dir.intRepr * Values.TICKS_PER_INCH_FORWARD * dist
-        val minError = 50
+        val ticks = (dir.intRepr * Values.TICKS_PER_INCH_FORWARD * dist).toInt()
+        l.logData("tix",ticks)
+        lfDrive.setTargetPosition(lfDrive.motor.currentPosition + ticks)
+        rfDrive.setTargetPosition(rfDrive.motor.currentPosition + ticks)
+        lbDrive.setTargetPosition(lbDrive.motor.currentPosition + ticks)
+        rbDrive.setTargetPosition(rbDrive.motor.currentPosition + ticks)
 
-        val lPID = PIDController(drivePIDConstants, lTarget)
-        val rPID = PIDController(drivePIDConstants, rTarget)
+        driveMotors.setMode(DcMotor.RunMode.RUN_TO_POSITION)
 
-        lPID.initController(leftPos)
-        rPID.initController(rightPos)
+        lfDrive.setPower(Math.abs(.2))
+        rfDrive.setPower(Math.abs(.2))
+        lbDrive.setPower(Math.abs(.2))
+        rbDrive.setPower(Math.abs(.2))
 
-        while (opMode.opModeIsActive() && !opMode.isStopRequested &&
-                lPID.prevError!! > minError && rPID.prevError!! > minError) {
-            setPowers(
-                    lPID.output(leftMotors.getAvgCurrentPositon()),
-                    rPID.output(rightMotors.getAvgCurrentPositon())
-            )
+        val startTime = System.currentTimeMillis()
+        while (lfDrive.motor.isBusy && rfDrive.motor.isBusy &&
+                lbDrive.motor.isBusy && rbDrive.motor.isBusy &&
+                System.currentTimeMillis() < startTime + timeout * 1000) {
+            wait(10)
+            driveMotors.logInfo()
         }
 
         stopAll()
+
+        driveMotors.setMode(DcMotor.RunMode.RUN_USING_ENCODER)
+
     }
+
+//    fun drive(dir: Direction, dist: Double, timeout: Int = 10) {
+//        driveMotors.prepareEncoderDrive()
+//        val leftPos = leftMotors.getAvgCurrentPositon()
+//        val rightPos = rightMotors.getAvgCurrentPositon()
+//
+//        val lTarget = leftPos +
+//                dir.intRepr * Values.TICKS_PER_INCH_FORWARD * dist
+//        val rTarget = rightPos +
+//                dir.intRepr * Values.TICKS_PER_INCH_FORWARD * dist
+//        val minError = 50
+//
+//        val lPID = PIDController(drivePIDConstants, lTarget)
+//        val rPID = PIDController(drivePIDConstants, rTarget)
+//
+//        lPID.initController(leftPos)
+//        rPID.initController(rightPos)
+//
+//        while (opMode.opModeIsActive() && !opMode.isStopRequested &&
+//                lPID.prevError!! > minError && rPID.prevError!! > minError) {
+//            setPowers(
+//                    lPID.output(leftMotors.getAvgCurrentPositon()),
+//                    rPID.output(rightMotors.getAvgCurrentPositon())
+//            )
+//        }
+//
+//        stopAll()
+//    }
 
     fun rotate(dir: Direction, angle: Int, timeout: Int = 10, broadcast: Boolean = false) {
         val targetHeading = fixAngle(imu.angle + dir.intRepr * angle)
@@ -135,15 +174,24 @@ class DriveTrain(val opMode: LinearOpMode, val wss: WSS? = null, val rotationPID
         val minError = 2
         val minPower = 2.0
 
-        val pid = PIDController(rotationPIDConstants, targetHeading, broadcast = broadcast, wss = wss)
+//        val pid = PIDController(rotationPIDConstants, targetHeading, broadcast = broadcast, wss = wss)
 
         var currentHeading: Double = imu.angle
+        var error = fixAngle(targetHeading - currentHeading)
 
-        pid.initController(currentHeading)
+        val dir = if (error > 0) {
+            Direction.SPIN_CW
+        } else {
+            Direction.SPIN_CCW
+        }
+
+//        pid.initController(currentHeading)
         do {
             currentHeading = imu.getAngle()
+            error = fixAngle(targetHeading - currentHeading)
 
-            var proportionalPower = pid.output(currentHeading, this::fixAngle)
+//            var proportionalPower = pid.output(currentHeading, this::fixAngle)
+
 
 //            proportionalPower = if (proportionalPower > 0) {
 //                Math.max(proportionalPower + 0.1, minPower)
@@ -151,18 +199,22 @@ class DriveTrain(val opMode: LinearOpMode, val wss: WSS? = null, val rotationPID
 //                Math.min(proportionalPower - 0.1, -minPower)
 //            }
 
-            l.logData("P Power", proportionalPower)
-            move(Direction.SPIN_CW, proportionalPower)
+            move(dir, 0.275)
 
-            if (Math.abs(pid.prevError!!) < minError) {
-                l.log("Within minError! Waiting...")
-                stopAll()
-                opMode.sleep(300)
-                currentHeading = imu.getAngle()
-                pid.output(currentHeading, this::fixAngle)
+            if (dir == Direction.SPIN_CW && error < minError) {
+                break
+            } else if (dir == Direction.SPIN_CCW && error > -minError) {
+                break
             }
-        } while (opMode.opModeIsActive() && !opMode.isStopRequested &&
-                Math.abs(pid.prevError!!) > minError)
+
+//            if (Math.abs(pid.prevError!!) < minError) {
+//                l.log("Within minError! Waiting...")
+//                stopAll()
+//                opMode.sleep(300)
+//                currentHeading = imu.getAngle()
+//                pid.output(currentHeading, this::fixAngle)
+//            }
+        } while (opMode.opModeIsActive() && !opMode.isStopRequested)
         stopAll()
     }
 

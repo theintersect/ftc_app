@@ -12,13 +12,14 @@ class DriveTrainTask(opMode:LinearOpMode): Task(opMode, "DRIVETRAIN_TASK"){
     }
 
     fun joyToPower(joy:Double):Double{
-        return(Math.pow(joy,3.0))
+        return(Math.pow(joy,3.0)/2)
     }
     fun main(){
         dt.setPowers(
                 joyToPower(opMode.gamepad1.left_stick_y.toDouble()),
-                joyToPower(opMode.gamepad1.left_stick_y.toDouble())
+                joyToPower(opMode.gamepad1.right_stick_y.toDouble())
         );
+        dt.driveMotors.logInfo()
     }
 
 }

@@ -1,23 +1,52 @@
 package org.firstinspires.ftc.teamcode.Components
 
+import android.graphics.Path
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
+import com.qualcomm.robotcore.hardware.DcMotor
+import com.qualcomm.robotcore.hardware.DcMotorSimple
+import org.firstinspires.ftc.teamcode.Models.Direction
+import org.firstinspires.ftc.teamcode.Utils.wait
 
 class Arms(opMode:LinearOpMode):MotorGroup(){
 
     val hwMap = opMode.hardwareMap
+    val DEGREES_TO_TICKS = 1680.0*4.0/360.0
+    val rArm = Motor(hwMap,"rArm")
+    val lArm = Motor(hwMap, "lArm")
+
 
     init{
-        this.addMotor( Motor(hwMap,"lArm"))
-        this.addMotor( Motor(hwMap,"rArm"))
+        rArm.setDirection(DcMotorSimple.Direction.REVERSE)
+        this.addMotor(lArm)
+        this.addMotor(rArm)
         this.useEncoders()
     }
 
-    fun run(reverse: Boolean = false) {
+    fun run(reverse: Boolean = false, power: Double = 1.0) {
         if (reverse) {
-            setPower(-1.0)
+            setPower(-power)
         } else {
-            setPower(1.0)
+            setPower(power)
         }
+    }
+
+    fun moveDegrees(direction: Direction, power:Double, degrees:Int){
+        val ticks = degrees * DEGREES_TO_TICKS
+        lArm.setTargetPosition((lArm.motor.currentPosition + ticks).toInt())
+        rArm.setTargetPosition((rArm.motor.currentPosition + ticks).toInt())
+
+        this.setMode(DcMotor.RunMode.RUN_TO_POSITION)
+        run(reverse = true, power = power)
+
+        while (lArm.motor.isBusy && rArm.motor.isBusy) {
+            wait(10)
+        }
+
+        stop()
+
+        this.setMode(DcMotor.RunMode.RUN_USING_ENCODER)
+
+//        this.moveTicks()
     }
 
 }

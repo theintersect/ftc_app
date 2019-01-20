@@ -4,7 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import org.firstinspires.ftc.teamcode.Components.DriveTrain
 import org.firstinspires.ftc.teamcode.Utils.Logger
 
-@com.qualcomm.robotcore.eventloop.opmode.TeleOp(name = "TeleOp 2 Wheel")
+@com.qualcomm.robotcore.eventloop.opmode.TeleOp(name = "TeleOp 2 Wheel (DEPRECIATED)")
 
 class  Tele2Wheel: LinearOpMode(){
     val l: Logger = Logger("TELE2WHEEL")

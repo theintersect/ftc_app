@@ -6,7 +6,7 @@ package org.firstinspires.ftc.teamcode.Components;
 
 public class Values {
 
-    public static double TICKS_PER_INCH_FORWARD = 60;
+    public static double TICKS_PER_INCH_FORWARD = 40;
     public static double HANG_TICKS_PER_INCH = 1000;
     // 61.3
     public static double TICKS_PER_INCH_STRAFE = 103;

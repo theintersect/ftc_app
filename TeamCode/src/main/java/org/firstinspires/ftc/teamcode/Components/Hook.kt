@@ -9,12 +9,24 @@ import org.firstinspires.ftc.teamcode.Utils.Logger
 class Hook(val opMode: LinearOpMode):Servo(opMode.hardwareMap,"hookServo"){
 
     val servoDirection = com.qualcomm.robotcore.hardware.Servo.Direction.FORWARD
+    val latchPosition = 35
+    val unlatchPosition = 100
 
     init {
 
         l.log("entered init")
         this.setDirection(servoDirection)
 
+    }
+
+    fun latch() {
+        setPosition(latchPosition)
+        l.log("latched")
+    }
+
+    fun unlatch() {
+        setPosition(unlatchPosition)
+        l.log("unlatched")
     }
 
 }

@@ -1,7 +1,7 @@
 import websocket
 import json
 import time
-
+from threading import Thread
 import threading
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
@@ -101,6 +101,10 @@ def clearFile(name):
         file.write("")
         print("Cleared file")
 
+def doMain():
+    ani = animation.FuncAnimation(fig, animate, interval=1000)
+    plt.show()
+
 if __name__ == "__main__":
     if(input(f"Clear existing file: {FILE} ? y/n\n") == "y"):
         print("clearing file")
@@ -109,8 +113,7 @@ if __name__ == "__main__":
     if(input(f"Connect websocket: {SOCKET_URL} ? y/n\n") == "y"):
         ws = connectWS()
         threading.Thread(target=recieveFromWS,args=[ws]).start()
+    doMain()
 
-    ani = animation.FuncAnimation(fig, animate, interval=1000)
-    plt.show()
 
 

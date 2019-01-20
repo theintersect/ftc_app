@@ -12,13 +12,14 @@ class ArmTask(opMode: LinearOpMode): Task(opMode, "ARM_TASK"){
     }
 
     fun main(){
-        if (opMode.gamepad1.x) {
+        if (opMode.gamepad1.dpad_up || opMode.gamepad2.dpad_up) {
             arms.run(reverse = true)
-        } else if (opMode.gamepad1.b) {
+        } else if (opMode.gamepad1.dpad_down || opMode.gamepad2.dpad_down) {
             arms.run(reverse = false)
         } else {
             arms.stop()
         }
+
     }
 
 }

@@ -7,6 +7,7 @@ import org.firstinspires.ftc.teamcode.Models.PIDConstants
 import org.firstinspires.ftc.teamcode.Utils.Logger
 import org.firstinspires.ftc.teamcode.Utils.WSS
 import org.firstinspires.ftc.teamcode.Utils.getPIDConstantsFromFile
+import org.firstinspires.ftc.teamcode.Utils.wait
 
 @com.qualcomm.robotcore.eventloop.opmode.Autonomous(name = "PID Test")
 
@@ -36,7 +37,32 @@ class  PidTest: LinearOpMode(){
         l.log("Opmode Started")
         if(opModeIsActive() && !isStopRequested){
             l.log("Starting turn")
-            dt.rotate(Direction.SPIN_CCW,90,10,broadcast=false)
+            dt.drive(Direction.FORWARD,15.0,10)
+
+//            dt.rotate(Direction.SPIN_CCW,10,10,broadcast=false)
+//            wait(mill = 1500)
+//            dt.rotate(Direction.SPIN_CW,10,10,broadcast=false)
+//            wait(mill = 1500)
+//
+//            dt.rotate(Direction.SPIN_CCW,45,10,broadcast=false)
+//            wait(mill = 1500)
+//
+//            dt.rotate(Direction.SPIN_CW,45,10,broadcast=false)
+//            wait(mill = 1500)
+//
+//
+//            dt.rotate(Direction.SPIN_CCW,90,10,broadcast=false)
+//            wait(mill = 1500)
+//
+//            dt.rotate(Direction.SPIN_CW,90,10,broadcast=false)
+//            wait(mill = 1500)
+//
+//
+//            dt.rotate(Direction.SPIN_CCW,150,10,broadcast=false)
+//            wait(mill = 1500)
+//
+//            dt.rotate(Direction.SPIN_CW,150,10,broadcast=false)
+
             l.log("Finished turn")
         }
 

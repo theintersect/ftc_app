@@ -2,7 +2,9 @@ package org.firstinspires.ftc.teamcode.Components
 import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.DcMotorSimple
 import com.qualcomm.robotcore.hardware.HardwareMap
+import org.firstinspires.ftc.teamcode.Models.Direction
 import org.firstinspires.ftc.teamcode.Utils.Logger
+
 
 class Motor(val hardwareMap: HardwareMap,val motorName:String ){
     val motor = hardwareMap.dcMotor.get(motorName)
@@ -38,12 +40,34 @@ class Motor(val hardwareMap: HardwareMap,val motorName:String ){
         motor.power = 0.0
     }
 
+    fun setTargetPosition(target:Int){
+        this.motor.targetPosition = target
+    }
+
+    fun moveTicks(direction:Direction, power:Double, ticks:Int){
+
+        motor.targetPosition = ticks + direction.intRepr * motor.currentPosition
+        motor.mode = DcMotor.RunMode.RUN_TO_POSITION
+        motor.power = Math.abs(power)
+        l.logData("Target", motor.targetPosition)
+        l.logData("Power", motor.power)
+        while (motor.isBusy) {
+            l.logData("Current position",motor.currentPosition)
+            Thread.sleep(10)
+        }
+        stop()
+        motor.mode = DcMotor.RunMode.RUN_USING_ENCODER
+
+    }
 
     fun logInfo(){
         l.logData("Power",motor.power)
-        l.logData("Position",motor.currentPosition)
-        l.logData("Busy",motor.isBusy)
-        l.logData("Zero Power Behaviour",motor.zeroPowerBehavior.toString())
+        l.logData("Position", motor.currentPosition)
+        l.logData("Target", motor.targetPosition)
+        l.logData("Mode", motor.mode.toString())
+
+//        l.logData("Busy",motor.isBusy)
+//        l.logData("Zero Power Behaviour",motor.zeroPowerBehavior.toString())
     }
 
 }
