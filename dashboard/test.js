@@ -64,7 +64,11 @@ EX:
 
 client.on('message', (message) => {
   try {
-    logger.success(JSON.stringify(JSON.parse(message), null, 3))
+    let message = JSON.parse(message)
+    let {event, ts, body} = message
+    logger.log(event)
+    logger.log(`Latency: ${new Date().getMilliseconds - ts*1000}ms`)
+    logger.success(JSON.stringify(body, null, 3))
   } catch (e) {
     logger.success(message)
   }
