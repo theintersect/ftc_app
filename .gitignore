@@ -31,3 +31,7 @@ build/
 *.properties
 *.gradle
 *.properties
+
+# dashboard/npm
+node_modules/
+package-lock.json

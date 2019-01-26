@@ -2,10 +2,11 @@ package org.firstinspires.ftc.teamcode.Utils
 
 import com.google.gson.JsonObject
 import org.firstinspires.ftc.teamcode.Models.PIDConstants
+import org.firstinspires.ftc.teamcode.Tasks.WebsocketTask
 import org.json.JSONObject
 
 
-public class PIDController(val pidConstants: PIDConstants, val desiredVal: Double,val broadcast:Boolean=false,val wss:WSS? = null) {
+public class PIDController(val pidConstants: PIDConstants, val desiredVal: Double,val broadcast:Boolean=false,val wss:WebsocketTask? = null) {
     var prevTime: Long? = null
     var prevError: Double? = null
     var runningI: Double = 0.0
@@ -76,7 +77,7 @@ public class PIDController(val pidConstants: PIDConstants, val desiredVal: Doubl
                     .toString()
             if(broadcast && wss != null){
 
-                wss.broadcastMessage(message=message)
+                wss.server.broadcastMessage(message)
             }
             writeFile("pidReadout.txt",content=message,overWrite = false)
 

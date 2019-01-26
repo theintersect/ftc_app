@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.OpModes
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import org.firstinspires.ftc.teamcode.Tasks.*
 import org.firstinspires.ftc.teamcode.Utils.Logger
+import org.json.JSONObject
 
 @com.qualcomm.robotcore.eventloop.opmode.TeleOp(name = "TeleOp (Threaded)")
 
@@ -20,6 +21,7 @@ class Tele: LinearOpMode() {
         val hookTask = HookTask(this)
         val dumperTask = DumperTask(this)
         val armStopperTask = ArmStopperTask(this)
+        val socketTask = WebsocketTask(this)
 
         l.log("Waiting for start...")
         waitForStart()
@@ -29,6 +31,7 @@ class Tele: LinearOpMode() {
         hookTask.start()
         dumperTask.start()
         armStopperTask.start()
+        socketTask.start()
 
         l.log("Started.")
         while (opModeIsActive() && !isStopRequested) {
@@ -36,8 +39,11 @@ class Tele: LinearOpMode() {
 //            armTask.run()
 //            sweeperTask.run()
 //            hookTask.run()
+            socketTask.server.broadcastMessage( JSONObject().put("type","ping").put("message","hello"))
+            sleep(1000)
             continue
         }
+        socketTask.stopThread()
         dtTask.stopThread()
         hookTask.stopThread()
         armTask.stopThread()

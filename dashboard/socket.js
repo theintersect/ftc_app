@@ -1,5 +1,5 @@
 function initSocket() {
-  socket = new WebSocket("ws://127.0.0.1:5000");
+  socket = new WebSocket("ws://192.168.49.1:8887");
 
   socket.onopen = () => {
     console.log("Connection established!");

@@ -6,10 +6,11 @@ import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.DcMotorSimple
 import org.firstinspires.ftc.teamcode.Models.Direction
 import org.firstinspires.ftc.teamcode.Models.PIDConstants
+import org.firstinspires.ftc.teamcode.Tasks.WebsocketTask
 import org.firstinspires.ftc.teamcode.Utils.*
 
 
-class DriveTrain(val opMode: LinearOpMode, val wss: WSS? = null, val rotationPIDConstants: PIDConstants = PIDConstants(1.0, 1.0, 1.0), val drivePIDConstants: PIDConstants = PIDConstants(1.0, 1.0, 1.0)) {
+class DriveTrain(val opMode: LinearOpMode, val wss: WebsocketTask? = null, val rotationPIDConstants: PIDConstants = PIDConstants(1.0, 1.0, 1.0), val drivePIDConstants: PIDConstants = PIDConstants(1.0, 1.0, 1.0)) {
     val l: Logger = Logger("DRIVETRAIN2")
     val lfDrive = Motor(opMode.hardwareMap, "lfDrive")
     val lbDrive = Motor(opMode.hardwareMap, "lbDrive")
@@ -174,7 +175,7 @@ class DriveTrain(val opMode: LinearOpMode, val wss: WSS? = null, val rotationPID
         val minError = 2
         val minPower = 2.0
 
-//        val pid = PIDController(rotationPIDConstants, targetHeading, broadcast = broadcast, wss = wss)
+        val pid = PIDController(rotationPIDConstants, targetHeading, broadcast = broadcast, wss = wss)
 
         var currentHeading: Double = imu.angle
         var error = fixAngle(targetHeading - currentHeading)
@@ -185,21 +186,21 @@ class DriveTrain(val opMode: LinearOpMode, val wss: WSS? = null, val rotationPID
             Direction.SPIN_CCW
         }
 
-//        pid.initController(currentHeading)
+        pid.initController(currentHeading)
         do {
             currentHeading = imu.getAngle()
             error = fixAngle(targetHeading - currentHeading)
 
-//            var proportionalPower = pid.output(currentHeading, this::fixAngle)
+            var proportionalPower = pid.output(currentHeading, this::fixAngle)
 
 
-//            proportionalPower = if (proportionalPower > 0) {
-//                Math.max(proportionalPower + 0.1, minPower)
-//            } else {
-//                Math.min(proportionalPower - 0.1, -minPower)
-//            }
+            proportionalPower = if (proportionalPower > 0) {
+                Math.max(proportionalPower + 0.1, minPower)
+            } else {
+                Math.min(proportionalPower - 0.1, -minPower)
+            }
 
-            move(dir, 0.275)
+            move(dir, proportionalPower)
 
             if (dir == Direction.SPIN_CW && error < minError) {
                 break
@@ -207,13 +208,13 @@ class DriveTrain(val opMode: LinearOpMode, val wss: WSS? = null, val rotationPID
                 break
             }
 
-//            if (Math.abs(pid.prevError!!) < minError) {
-//                l.log("Within minError! Waiting...")
-//                stopAll()
-//                opMode.sleep(300)
-//                currentHeading = imu.getAngle()
-//                pid.output(currentHeading, this::fixAngle)
-//            }
+            if (Math.abs(pid.prevError!!) < minError) {
+                l.log("Within minError! Waiting...")
+                stopAll()
+                opMode.sleep(300)
+                currentHeading = imu.getAngle()
+                pid.output(currentHeading, this::fixAngle)
+            }
         } while (opMode.opModeIsActive() && !opMode.isStopRequested)
         stopAll()
     }

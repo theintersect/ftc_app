@@ -15,14 +15,15 @@ class PidTele: LinearOpMode() {
     val l = Logger("PID_TELEOP")
     val pidRotation: PIDConstants = getPIDConstantsFromFile("pid_rotation.json")
     val pidDrive: PIDConstants = getPIDConstantsFromFile("pid_drive.json")
-
+    val wsTask = WebsocketTask(this)
 
     init {
         l.log("TeleOp initialized.")
+        wsTask.start()
     }
 
     override fun runOpMode() {
-        val dt = DriveTrain(this,drivePIDConstants = pidDrive, rotationPIDConstants = pidRotation)
+        val dt = DriveTrain(this,drivePIDConstants = pidDrive, rotationPIDConstants = pidRotation, wss=wsTask)
 
         l.log("Waiting for start...")
         waitForStart()
@@ -30,7 +31,8 @@ class PidTele: LinearOpMode() {
         l.log("Started.")
         while (opModeIsActive() && !isStopRequested) {
             if (gamepad1.a) {
-                dt.rotate(Direction.SPIN_CCW,10,10,broadcast=false)
+                l.log("doing shit")
+                dt.rotate(Direction.SPIN_CCW,10,10,broadcast=true)
             } else if (gamepad1.b) {
                 dt.rotate(Direction.SPIN_CW,10,10,broadcast=false)
             } else if (gamepad1.x) {
