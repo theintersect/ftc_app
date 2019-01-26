@@ -74,7 +74,8 @@ public class PIDController(val pidConstants: PIDConstants, val desiredVal: Doubl
                     .put("i",runningI)
                     .put("d",D)
                     .put("output",output)
-                    .toString()
+                    .toString(4)
+//            l.log(message)
             if(broadcast && wss != null){
 
                 wss.server.broadcastMessage(message)
