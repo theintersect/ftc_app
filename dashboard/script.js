@@ -10,25 +10,18 @@ $(document).ready(() => {
 $("#config").submit(event => {
   event.preventDefault();
 
-  $.ajax({
-    success: function(data) {
-      let formData = $("#config").serializeArray();
-      values = [];
-      for (let i = 0; i < formData.length; i++) {
-        valueStr = formData[i].value;
-        if (valueStr == "") {
-          values.push(0);
-        } else {
-          values.push(parseFloat(valueStr));
-        }
-      }
-      console.log(values);
-      socket.send("[UPID]:" + values.join(","));
-    },
-    error: function() {
-      console.log("Error submitting config.");
+  let formData = $("#config").serializeArray();
+  config = [];
+  for (let i = 0; i < formData.length; i++) {
+    configStr = formData[i].value;
+    if (configStr == "") {
+      config.push(0);
+    } else {
+      config.push(parseFloat(configtr));
     }
-  });
+  }
+  console.log(config);
+  socket.send("[UPID]:" + config.join(","));
 });
 
 $("#runPID").click(() => {

@@ -17,6 +17,10 @@ class Telemetry {
     });
   }
 
+  addItemFromJSON(json) {
+    this.addItem(json.variable, json.value);
+  }
+
   getTelemetry() {
     let telemStr = "";
     for (var itemName in this.items) {
