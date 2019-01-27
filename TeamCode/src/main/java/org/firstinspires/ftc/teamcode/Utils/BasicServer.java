@@ -37,7 +37,7 @@ public class BasicServer extends WebSocketServer {
                 .put("body", jsonData);
         broadcastMessage(message);
     }
-    String getIP(WebSocket conn){
+    private String getIP(WebSocket conn){
         return conn.getRemoteSocketAddress().getAddress().getHostAddress();
     }
     @Override
@@ -57,7 +57,9 @@ public class BasicServer extends WebSocketServer {
 
     @Override
     public void onMessage( WebSocket conn, String message ) {
-//        broadcast( message );
+        if(message.toLowerCase().equals("ping")){
+            broadcastMessage("pong");
+        }
         l.logData( "recieved",getIP(conn) + ": " + message );
     }
     @Override
