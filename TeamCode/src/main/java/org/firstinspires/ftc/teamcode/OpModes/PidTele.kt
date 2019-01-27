@@ -19,13 +19,13 @@ class PidTele: LinearOpMode() {
 
     init {
         l.log("TeleOp initialized.")
-        wsTask.start()
     }
 
     override fun runOpMode() {
         val dt = DriveTrain(this,drivePIDConstants = pidDrive, rotationPIDConstants = pidRotation, wss=wsTask)
 
         l.log("Waiting for start...")
+        wsTask.start()
         waitForStart()
 
         l.log("Started.")
@@ -49,6 +49,7 @@ class PidTele: LinearOpMode() {
                 dt.rotate(Direction.SPIN_CW,150,10,broadcast=false)
             }
         }
+        wsTask.stopThread()
 
         l.log("Stopped threads")
     }

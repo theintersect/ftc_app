@@ -74,13 +74,13 @@ public class PIDController(val pidConstants: PIDConstants, val desiredVal: Doubl
                     .put("i",runningI)
                     .put("d",D)
                     .put("output",output)
-                    .toString(4)
-//            l.log(message)
+
+            l.log(message.toString())
             if(broadcast && wss != null){
 
-                wss.server.broadcastMessage(message)
+                wss.server.broadcastData("pid", message)
             }
-            writeFile("pidReadout.txt",content=message,overWrite = false)
+            writeFile("pidReadout.txt",content=message.toString(),overWrite = false)
 
             return output
         } else {

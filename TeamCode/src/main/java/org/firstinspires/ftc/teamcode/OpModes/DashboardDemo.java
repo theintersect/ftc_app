@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Arrays;
 
-@com.qualcomm.robotcore.eventloop.opmode.Autonomous(name = "Socket client")
+@com.qualcomm.robotcore.eventloop.opmode.Autonomous(name = "Socket xxx")
 
 
 public class DashboardDemo extends LinearOpMode {

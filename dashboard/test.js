@@ -63,6 +63,7 @@ EX:
 */
 
 client.on('message', (message) => {
+    console.log(message)
   try {
     let message = JSON.parse(message)
     let {event, ts, body} = message
@@ -70,6 +71,7 @@ client.on('message', (message) => {
     logger.log(`Latency: ${new Date().getMilliseconds - ts*1000}ms`)
     logger.success(JSON.stringify(body, null, 3))
   } catch (e) {
+    logger.error(e)
     logger.success(message)
   }
 })
@@ -85,6 +87,6 @@ function send (message) {
   client.send(message)
   logger.info(`Outgoing: ${message}`)
 }
-// setInterval(() => {
-//   send('ping')
-// }, 2000)
+ setInterval(() => {
+   send('ping')
+ }, 2000)

@@ -11,8 +11,14 @@ import java.util.*
 
 class WebsocketTask(opMode: LinearOpMode): Task(opMode, "WEBSOCKET_TASK"){
 
+    init{
+
+    }
     val server = BasicServer(8887)
     private val l = Logger("WEBSOCKET_TASK")
+    init {
+        l.log("Created websocket on port 8887")
+    }
 
 
     override fun run(){
@@ -38,6 +44,11 @@ class WebsocketTask(opMode: LinearOpMode): Task(opMode, "WEBSOCKET_TASK"){
                 }
             }
         }
+    }
+
+    override fun stopThread(){
+        this.server.stop(1000)
+        l.log("KILLED SERVER")
     }
 
 }

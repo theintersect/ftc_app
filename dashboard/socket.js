@@ -1,5 +1,13 @@
 function initSocket() {
-  socket = new WebSocket("ws://192.168.49.1:8887");
+    try{
+        console.log('connecting socket')
+      socket = new WebSocket("ws://192.168.49.1:8887");
+    }catch(e){
+        console.log(e)
+        setInterval(() => {
+        initSocket
+        }, 1000)
+    }
 
   socket.onopen = () => {
     console.log("Connection established!");
@@ -19,11 +27,13 @@ function initSocket() {
 }
 
 function parseMessage(message) {
-  let contents = JSON.parse(message);
+    console.log(message)
+  let contents = JSON.parse(message.data);
   let body = contents.body;
   console.log(contents);
-  switch (contents.event.toLocaleLowerCase()) {
+  switch (contents.event.toLowerCase()) {
     case "pid":
+    console.log('adding to json')
       chart.addDataFromJSON(body);
       break;
     case "log":

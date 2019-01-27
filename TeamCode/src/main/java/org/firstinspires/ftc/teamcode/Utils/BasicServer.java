@@ -6,6 +6,7 @@ import java.nio.ByteBuffer;
 import org.java_websocket.WebSocket;
 import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.WebSocketServer;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
@@ -26,8 +27,15 @@ public class BasicServer extends WebSocketServer {
     }
 
     public void broadcastMessage(String text){
-        super.broadcast(text);
+        broadcast(text);
         l.logData("Broadcasted", text);
+    }
+    public void broadcastData(String eventType, JSONObject jsonData) throws JSONException {
+        JSONObject message = new JSONObject()
+                .put("event",eventType)
+                .put("ts",System.currentTimeMillis())
+                .put("body", jsonData);
+        broadcastMessage(message);
     }
     String getIP(WebSocket conn){
         return conn.getRemoteSocketAddress().getAddress().getHostAddress();

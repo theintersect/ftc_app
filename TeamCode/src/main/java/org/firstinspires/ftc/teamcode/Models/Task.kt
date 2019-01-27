@@ -11,7 +11,7 @@ public abstract class Task(var opMode: LinearOpMode,taskName:String):Thread(){
     public var running:Boolean = true
     private val l:Logger = Logger(taskName)
 
-    fun stopThread() {
+    open fun stopThread() {
         this.running = false
         l.log("Thread stopped.")
     }
