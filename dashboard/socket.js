@@ -2,6 +2,8 @@ function initSocket() {
     try{
         console.log('connecting socket')
       socket = new WebSocket("ws://192.168.49.1:8887");
+      // socket = new WebSocket("ws://localhost:8080");
+
     }catch(e){
         console.log(e)
         setInterval(() => {
@@ -27,9 +29,10 @@ function initSocket() {
 }
 
 function parseMessage(message) {
-    console.log(message)
+    // console.log(message)
   let contents = JSON.parse(message.data);
   let body = contents.body;
+  console.log(JSON.stringify(contents,null,4))
   console.log(contents);
   switch (contents.event.toLowerCase()) {
     case "pid":
@@ -45,3 +48,4 @@ function parseMessage(message) {
       break;
   }
 }
+

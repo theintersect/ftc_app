@@ -6,6 +6,8 @@ import org.firstinspires.ftc.teamcode.Models.Task
 
 class DriveTrainTask(opMode:LinearOpMode): Task(opMode, "DRIVETRAIN_TASK"){
     var dt = DriveTrain(opMode)
+    init{
+    }
 
     override fun run(){
         runWhileActive(this::main)

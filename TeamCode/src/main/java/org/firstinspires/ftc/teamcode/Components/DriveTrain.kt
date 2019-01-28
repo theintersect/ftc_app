@@ -40,6 +40,9 @@ class DriveTrain(val opMode: LinearOpMode, val wss: WebsocketTask? = null, val r
         rightMotors.addMotor(rbDrive)
         rightMotors.addMotor(rfDrive)
 
+        driveMotors.useEncoders()
+        driveMotors.motors.forEach({it.motor.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE})
+
         l.log("Initialized motors")
         l.log("Websocket initialized: ${wss != null}")
         l.log("Rotation PIO: ${rotationPIDConstants}")
@@ -57,6 +60,9 @@ class DriveTrain(val opMode: LinearOpMode, val wss: WebsocketTask? = null, val r
     }
     fun setPowers(lPower: Double, rPower: Double) {
 //        rfDrive.setPower(lPower)
+        l.logData("lPow",lPower)
+        l.logData("rPow",rPower)
+
         leftMotors.setPower(normalizePower(lPower))
         rightMotors.setPower(normalizePower(rPower))
     }
@@ -194,12 +200,12 @@ class DriveTrain(val opMode: LinearOpMode, val wss: WebsocketTask? = null, val r
             var proportionalPower = pid.output(currentHeading, this::fixAngle)
 
 
-            proportionalPower = if (proportionalPower > 0) {
-                Math.max(proportionalPower + 0.1, minPower)
-            } else {
-                Math.min(proportionalPower - 0.1, -minPower)
-            }
-
+//            proportionalPower = if (proportionalPower > 0) {
+//                Math.max(proportionalPower + 0.1, minPower)
+//            } else {
+//                Math.min(proportionalPower - 0.1, -minPower)
+//            }
+            l.logData("Direction",dir.toString())
             move(dir, proportionalPower)
 
             if (dir == Direction.SPIN_CW && error < minError) {
