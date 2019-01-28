@@ -1,0 +1,24 @@
+html,
+body {
+  height: 100%;
+}
+
+#root {
+  height: 100%;
+}
+
+.container-fluid {
+  height: calc(100% - 56px);
+}
+
+.card {
+  height: calc(100%);
+}
+
+.card-body {
+  height: calc(100%);
+}
+
+.fill-card {
+  height: calc(100% - 36px);
+}
