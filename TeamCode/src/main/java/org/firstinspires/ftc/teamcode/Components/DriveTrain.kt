@@ -132,33 +132,35 @@ class DriveTrain(val opMode: LinearOpMode, val wss: WebsocketTask? = null, val r
 
     }
 
-//    fun drive(dir: Direction, dist: Double, timeout: Int = 10) {
-//        driveMotors.prepareEncoderDrive()
-//        val leftPos = leftMotors.getAvgCurrentPositon()
-//        val rightPos = rightMotors.getAvgCurrentPositon()
-//
-//        val lTarget = leftPos +
-//                dir.intRepr * Values.TICKS_PER_INCH_FORWARD * dist
-//        val rTarget = rightPos +
-//                dir.intRepr * Values.TICKS_PER_INCH_FORWARD * dist
-//        val minError = 50
-//
-//        val lPID = PIDController(drivePIDConstants, lTarget)
-//        val rPID = PIDController(drivePIDConstants, rTarget)
-//
-//        lPID.initController(leftPos)
-//        rPID.initController(rightPos)
-//
-//        while (opMode.opModeIsActive() && !opMode.isStopRequested &&
-//                lPID.prevError!! > minError && rPID.prevError!! > minError) {
-//            setPowers(
-//                    lPID.output(leftMotors.getAvgCurrentPositon()),
-//                    rPID.output(rightMotors.getAvgCurrentPositon())
-//            )
-//        }
-//
-//        stopAll()
-//    }
+    fun drivePID(dir: Direction, dist: Double, timeout: Int = 10) {
+        driveMotors.prepareEncoderDrive()
+        val leftPos = leftMotors.getAvgCurrentPositon()
+        val rightPos = rightMotors.getAvgCurrentPositon()
+
+        val lTarget = leftPos +
+                dir.intRepr * Values.TICKS_PER_INCH_FORWARD * dist
+        val rTarget = rightPos +
+                dir.intRepr * Values.TICKS_PER_INCH_FORWARD * dist
+        val minError = 50
+
+        val constants = getPIDConstantsFromFile("pid_rotation.json")
+
+        val lPID = PIDController(constants, lTarget)
+        val rPID = PIDController(constants, rTarget)
+
+        lPID.initController(leftPos)
+        rPID.initController(rightPos)
+
+        while (opMode.opModeIsActive() && !opMode.isStopRequested &&
+                lPID.prevError!! > minError && rPID.prevError!! > minError) {
+            setPowers(
+                    lPID.output(leftMotors.getAvgCurrentPositon()),
+                    rPID.output(rightMotors.getAvgCurrentPositon())
+            )
+        }
+
+        stopAll()
+    }
 
     fun rotate(dir: Direction, angle: Int, timeout: Int = 10, broadcast: Boolean = false) {
         val targetHeading = fixAngle(imu.angle + dir.intRepr * angle)
