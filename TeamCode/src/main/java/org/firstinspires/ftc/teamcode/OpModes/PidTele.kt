@@ -32,21 +32,21 @@ class PidTele: LinearOpMode() {
         while (opModeIsActive() && !isStopRequested) {
             if (gamepad1.a) {
                 l.log("doing shit")
-                dt.rotate(Direction.FORWARD_CCW,10,10,broadcast=true)
+                dt.rotate(Direction.SPIN_CCW,10,10,broadcast=true)
             } else if (gamepad1.b) {
-                dt.rotate(Direction.FORWARD_CW,10,10,broadcast=false)
+                dt.rotate(Direction.SPIN_CW,10,10,broadcast=true)
             } else if (gamepad1.x) {
-                dt.rotate(Direction.SPIN_CCW,45,10,broadcast=false)
+                dt.rotate(Direction.SPIN_CCW,45,10,broadcast=true)
             } else if (gamepad1.y) {
-                dt.rotate(Direction.SPIN_CW,45,10,broadcast=false)
+                dt.rotate(Direction.SPIN_CW,45,10,broadcast=true)
             } else if (gamepad1.dpad_up) {
-                dt.rotate(Direction.SPIN_CCW,90,10,broadcast=false)
+                dt.rotate(Direction.SPIN_CCW,90,10,broadcast=true)
             } else if (gamepad1.dpad_right) {
-                dt.rotate(Direction.SPIN_CW,90,10,broadcast=false)
+                dt.rotate(Direction.SPIN_CW,90,10,broadcast=true)
             } else if (gamepad1.dpad_down) {
-                dt.rotate(Direction.SPIN_CCW,150,10,broadcast=false)
+                dt.rotate(Direction.SPIN_CCW,150,10,broadcast=true)
             } else if (gamepad1.dpad_left) {
-                dt.rotate(Direction.SPIN_CW,150,10,broadcast=false)
+                dt.rotate(Direction.SPIN_CW,150,10,broadcast=true)
             }
         }
         wsTask.stopThread()

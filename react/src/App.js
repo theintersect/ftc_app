@@ -15,7 +15,7 @@ export default class App extends Component {
     this.state = {
       log: new LogObject(),
       telemetry: new TelemetryObject(),
-      pidChart: new ChartObject("PID Chart", "timestamp", ["p", "i", "d"]),
+      pidChart: new ChartObject("PID Chart", "timestamp", ["p", "i", "d", "output"]),
       errorChart: new ChartObject("Error Chart", "timestamp", ["error"])
     };
     this.initSocket();
@@ -34,15 +34,26 @@ export default class App extends Component {
               <Telemetry telemetry={this.state.telemetry} />
             </div> */}
             <div className="col">
-              <Chart chart={this.state.pidChart} />
+              <Chart 
+              clearChart={this.clearChart}
+              chart={this.state.pidChart} />
             </div>
             <div className="col">
-              <Chart chart={this.state.errorChart} />
+              <Chart 
+              clearChart={this.clearChart}             
+              chart={this.state.errorChart} />
             </div>
           </div>
         </main>
       </React.Fragment>
     );
+  }
+
+  clearChart = () => {
+    console.log("clearChart")
+    const pidChart = this.state.pidChart.clear();
+    const errorChart = this.state.errorChart.clear();
+    this.setState({pidChart: pidChart, errorChart: errorChart});
   }
 
   initSocket = () => {
@@ -53,11 +64,18 @@ export default class App extends Component {
       socket = new WebSocket(url);
     } catch (e) {
       console.log(e);
-      setInterval(() => {
-        this.initSocket();
-      }, 1000);
-    }
 
+    }
+    socket.onerror = (error) => {
+      if(true){
+        console.log('ws coonnection failed')
+        setTimeout(() => {
+          console.log("retying..")
+          this.initSocket();
+        }, 1000);  
+      }
+  
+    }
     socket.onopen = () => {
       console.log("Connection established!");
     };
@@ -73,7 +91,8 @@ export default class App extends Component {
           const pidChart = this.state.pidChart.addData(body.ts, [
             body.p,
             body.i,
-            body.d
+            body.d,
+            body.output
           ]);
           const errorChart = this.state.errorChart.addData(body.ts, [
             body.error

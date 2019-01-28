@@ -21,4 +21,8 @@ export default class ChartObject {
     newData.push(datapoint)
     return new ChartObject(this.title, this.xLabel, this.dataTypes, newData)
   }
+
+  clear () {
+    return new ChartObject(this.title, this.xLabel, this.dataTypes, []);
+  }
 }

@@ -26,10 +26,10 @@ class DriveTrain(val opMode: LinearOpMode, val wss: WebsocketTask? = null, val r
 
     init {
         l.log("entered init")
-        lfDrive.setDirection(DcMotorSimple.Direction.FORWARD)
-        lbDrive.setDirection(DcMotorSimple.Direction.FORWARD)
-        rfDrive.setDirection(DcMotorSimple.Direction.REVERSE)
-        rbDrive.setDirection(DcMotorSimple.Direction.REVERSE)
+        lfDrive.setDirection(DcMotorSimple.Direction.REVERSE)
+        lbDrive.setDirection(DcMotorSimple.Direction.REVERSE)
+        rfDrive.setDirection(DcMotorSimple.Direction.FORWARD)
+        rbDrive.setDirection(DcMotorSimple.Direction.FORWARD)
         driveMotors.addMotor(lfDrive)
         driveMotors.addMotor(rfDrive)
         driveMotors.addMotor(lbDrive)
@@ -180,17 +180,20 @@ class DriveTrain(val opMode: LinearOpMode, val wss: WebsocketTask? = null, val r
     fun rotateTo(targetHeading: Double, timeout: Int = 10, broadcast: Boolean = false) {
         val minError = 2
         val minPower = 2.0
-
-        val pid = PIDController(rotationPIDConstants, targetHeading, broadcast = broadcast, wss = wss)
+        val constants = getPIDConstantsFromFile("pid_rotation.json")
+        //todo: remove
+//        val pid = PIDController(rotationPIDConstants, targetHeading, broadcast = broadcast, wss = wss)
+        val pid = PIDController(constants, targetHeading, broadcast = broadcast, wss = wss)
 
         var currentHeading: Double = imu.angle
         var error = fixAngle(targetHeading - currentHeading)
 
-        val dir = if (error > 0) {
-            Direction.SPIN_CW
-        } else {
-            Direction.SPIN_CCW
-        }
+//        val dir = if (error > 0) {
+//            Direction.SPIN_CW
+//        } else {
+//            Direction.SPIN_CCW
+//        }
+        val dir = Direction.SPIN_CCW
 
         pid.initController(currentHeading)
         do {
@@ -208,11 +211,11 @@ class DriveTrain(val opMode: LinearOpMode, val wss: WebsocketTask? = null, val r
             l.logData("Direction",dir.toString())
             move(dir, proportionalPower)
 
-            if (dir == Direction.SPIN_CW && error < minError) {
-                break
-            } else if (dir == Direction.SPIN_CCW && error > -minError) {
-                break
-            }
+//            if (dir == Direction.SPIN_CW && error < minError) {
+//                break
+//            } else if (dir == Direction.SPIN_CCW && error > -minError) {
+//                break
+//            }
 
             if (Math.abs(pid.prevError!!) < minError) {
                 l.log("Within minError! Waiting...")
@@ -221,7 +224,7 @@ class DriveTrain(val opMode: LinearOpMode, val wss: WebsocketTask? = null, val r
                 currentHeading = imu.getAngle()
                 pid.output(currentHeading, this::fixAngle)
             }
-        } while (opMode.opModeIsActive() && !opMode.isStopRequested)
+        } while (opMode.opModeIsActive() && !opMode.isStopRequested && Math.abs(pid.prevError!!) > minError)
         stopAll()
     }
 

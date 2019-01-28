@@ -13,6 +13,7 @@ public class PIDController(val pidConstants: PIDConstants, val desiredVal: Doubl
     val l:Logger = Logger("PID")
 
 
+
     fun initController(actualVal: Double) {
         prevTime = System.currentTimeMillis()
         prevError = desiredVal - actualVal
@@ -29,6 +30,7 @@ public class PIDController(val pidConstants: PIDConstants, val desiredVal: Doubl
             val P = pidConstants.kP * e
             l.log("${pidConstants.kP} * $e = $P")
             runningI += -pidConstants.kI * e * dt
+            val I = runningI
             println(dt)
             println(runningI)
             val D = -pidConstants.kD * de / dt
@@ -50,7 +52,7 @@ public class PIDController(val pidConstants: PIDConstants, val desiredVal: Doubl
 //            }
 
             println(D)
-            val output = P + runningI + D
+            val output = P + I + D
 
             l.lineBreak()
             l.logData("ts",System.currentTimeMillis())
@@ -58,7 +60,7 @@ public class PIDController(val pidConstants: PIDConstants, val desiredVal: Doubl
             l.logData("de",de)
             l.logData("dt",dt)
             l.logData("p",P)
-            l.logData("i",runningI)
+            l.logData("i",I)
             l.logData("d",D)
             l.logData("out",output)
             l.lineBreak()
@@ -71,7 +73,7 @@ public class PIDController(val pidConstants: PIDConstants, val desiredVal: Doubl
                     .put("de",de)
                     .put("dt",dt)
                     .put("p",P)
-                    .put("i",runningI)
+                    .put("i",I)
                     .put("d",D)
                     .put("output",output)
 

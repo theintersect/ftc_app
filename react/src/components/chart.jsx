@@ -3,6 +3,7 @@ import {
   ResponsiveContainer,
   LineChart,
   Line,
+  Tooltip,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -10,27 +11,33 @@ import {
 } from "recharts";
 
 const Chart = props => {
-  const { chart } = props;
+  const { clearChart, chart } = props;
   const { title, xLabel, dataTypes, data } = chart;
 
   const colors = [
-    "#DAF7A6",
+    "#000000",
     "#FFC300",
-    "#FF5733",
+    "#00FF00",
     "#C70039",
     "#900C3F",
     "#581845"
   ];
 
+
   return (
     <div className="card">
       <div className="card-body">
-        <h5 className="card-title">{title}</h5>
+        <div className="card-title">
+          <h5>{title}</h5>        
+          {/* <a onClick={clearChart} className="">Clear</a> */}
+        </div>
+
         <div className="fill-card">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={data}>
               <XAxis dataKey={xLabel} />
               <YAxis width={40} />
+              <Tooltip />
               <CartesianGrid strokeDasharray="3 3" />
               <Legend />
               {dataTypes.map((dt, idx) => {
@@ -40,6 +47,7 @@ const Chart = props => {
                     type="monotone"
                     dataKey={dt}
                     stroke={colors[idx]}
+                    dot={false}
                   />
                 );
               })}
