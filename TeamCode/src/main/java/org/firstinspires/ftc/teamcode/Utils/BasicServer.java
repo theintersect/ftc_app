@@ -17,16 +17,17 @@ public class BasicServer extends WebSocketServer {
     public BasicServer(int port ) {
         super( new InetSocketAddress( port ) );
     }
+//
+//    public BasicServer(InetSocketAddress address ) {
+//        super( address );
+//    }
 
-    public BasicServer(InetSocketAddress address ) {
-        super( address );
-    }
 
     public void broadcastMessage(JSONObject json){
         broadcastMessage(json.toString());
     }
 
-    public void broadcastMessage(String text){
+    private void broadcastMessage(String text){
         broadcast(text);
         l.logData("Broadcasted", text);
     }
@@ -44,7 +45,7 @@ public class BasicServer extends WebSocketServer {
     public void onOpen( WebSocket conn, ClientHandshake handshake ) {
 //        conn.send("Welcome to the server!"); //This method sends a message to the new client
 //        broadcast( "new connection: " + handshake.getResourceDescriptor() ); //This method sends a message to all clients connected
-        l.logData( "New connection",getIP(conn));
+        l.logData( "New connection", getIP(conn));
     }
 
     @Override

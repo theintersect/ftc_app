@@ -77,7 +77,6 @@ public class PIDController(val pidConstants: PIDConstants, val desiredVal: Doubl
 
             l.log(message.toString())
             if(broadcast && wss != null){
-
                 wss.server.broadcastData("pid", message)
             }
             writeFile("pidReadout.txt",content=message.toString(),overWrite = false)

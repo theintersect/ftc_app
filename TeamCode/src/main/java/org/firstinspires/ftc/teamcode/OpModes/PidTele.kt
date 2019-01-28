@@ -32,9 +32,9 @@ class PidTele: LinearOpMode() {
         while (opModeIsActive() && !isStopRequested) {
             if (gamepad1.a) {
                 l.log("doing shit")
-                dt.rotate(Direction.SPIN_CCW,10,10,broadcast=true)
+                dt.rotate(Direction.FORWARD_CCW,10,10,broadcast=true)
             } else if (gamepad1.b) {
-                dt.rotate(Direction.SPIN_CW,10,10,broadcast=false)
+                dt.rotate(Direction.FORWARD_CW,10,10,broadcast=false)
             } else if (gamepad1.x) {
                 dt.rotate(Direction.SPIN_CCW,45,10,broadcast=false)
             } else if (gamepad1.y) {
