@@ -143,7 +143,7 @@ class DriveTrain(val opMode: LinearOpMode, val wss: WebsocketTask? = null, val r
                 dir.intRepr * Values.TICKS_PER_INCH_FORWARD * dist
         val minError = 50
 
-        val constants = getPIDConstantsFromFile("pid_rotation.json")
+        val constants = getPIDConstantsFromFile("pid_drive.json")
 
         val lPID = PIDController(constants, lTarget)
         val rPID = PIDController(constants, rTarget)
