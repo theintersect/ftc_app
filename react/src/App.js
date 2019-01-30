@@ -15,8 +15,14 @@ export default class App extends Component {
     this.state = {
       log: new LogObject(),
       telemetry: new TelemetryObject(),
-      pidChart: new ChartObject("PID Chart", "timestamp", ["p", "i", "d", "output"]),
-      errorChart: new ChartObject("Error Chart", "timestamp", ["error"])
+      pidChart: new ChartObject("PID Chart", "timestamp", [
+        "p",
+        "i",
+        "d",
+        "output"
+      ]),
+      errorChart: new ChartObject("Error Chart", "timestamp", ["error"]),
+      connected: false
     };
     this.initSocket();
   }
@@ -24,60 +30,62 @@ export default class App extends Component {
   render() {
     return (
       <React.Fragment>
-        <NavBar />
-        <main className="container-fluid py-md-3">
-          <div className="row h-100">
-            {/* <div className="col">
-              <Log log={this.state.log} />
+        <NavBar connected={this.state.connected} />
+        <div className="content">
+          <div className="container-fluid">
+            <div className="row">
+              <div className="col col-lg-12 col-sm-12">
+                <Chart
+                  id="pidChart"
+                  clearChart={this.clearChart}
+                  chart={this.state.pidChart}
+                />
+              </div>
+              <div className="col col-lg-12 col-sm-12">
+                <Chart
+                  id="errorChart"
+                  clearChart={this.clearChart}
+                  chart={this.state.errorChart}
+                />
+              </div>
             </div>
-            <div className="col">
-              <Telemetry telemetry={this.state.telemetry} />
-            </div> */}
-            <div className="col">
-              <Chart 
-              clearChart={this.clearChart}
-              chart={this.state.pidChart} />
-            </div>
-            <div className="col">
-              <Chart 
-              clearChart={this.clearChart}             
-              chart={this.state.errorChart} />
+            <div className="row">
+              <div className="col col-lg-6 col-sm-12">
+                <Log log={this.state.log} />
+              </div>
+              <div className="col col-lg-6 col-sm-12">
+                <Telemetry telemetry={this.state.telemetry} />
+              </div>
             </div>
           </div>
-        </main>
+        </div>
       </React.Fragment>
     );
   }
 
-  clearChart = () => {
-    console.log("clearChart")
-    const pidChart = this.state.pidChart.clear();
-    const errorChart = this.state.errorChart.clear();
-    this.setState({pidChart: pidChart, errorChart: errorChart});
-  }
+  clearChart = chartId => {
+    const chart = this.state[chartId].clear();
+    this.setState({ [chartId]: chart });
+  };
 
   initSocket = () => {
-    const url = "ws://192.168.49.1:8887";
+    // const url = "ws://192.168.49.1:8887";
+    const url = "ws://localhost:8080";
     let socket = null;
-    try {
-      console.log("Connecting socket...");
-      socket = new WebSocket(url);
-    } catch (e) {
-      console.log(e);
+    console.log("Connecting socket...");
+    socket = new WebSocket(url);
 
-    }
-    socket.onerror = (error) => {
-      if(true){
-        console.log('ws coonnection failed')
-        setTimeout(() => {
-          console.log("retying..")
-          this.initSocket();
-        }, 1000);  
-      }
-  
-    }
     socket.onopen = () => {
       console.log("Connection established!");
+      this.setState({ connected: true });
+    };
+
+    socket.onclose = () => {
+      console.log("Socket closed.");
+      this.setState({ connected: false });
+      setTimeout(() => {
+        this.initSocket();
+      }, 2000);
     };
 
     socket.onmessage = message => {

@@ -1,24 +1,31 @@
-html,
-body {
-  height: 100%;
+.card-body {
+  padding: 1rem !important;
 }
 
-#root {
-  height: 100%;
+.list-group-item {
+  padding-top: 0.5rem !important;
+  padding-right: 0.75rem !important;
+  padding-bottom: 0.5rem !important;
+  padding-left: 0.75rem !important;
 }
 
-.container-fluid {
-  height: calc(100% - 56px);
+.card-title .text {
+  font-size: 20px;
+}
+
+.col {
+  padding: 0 0.5rem 0 0.5rem !important;
 }
 
 .card {
-  height: calc(100%);
+  margin-top: 1rem !important;
 }
 
-.card-body {
-  height: calc(100%);
+.container-fluid {
+  padding: 0rem 0.5rem 0rem 0.5rem !important;
 }
 
-.fill-card {
-  height: calc(100% - 36px);
+.content {
+  background-color: #f8f9fa;
+  padding: 0rem 1rem 1rem 1rem !important;
 }

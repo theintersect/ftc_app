@@ -1,5 +1,5 @@
 import React from "react";
-import LogItem from "./logItem.jsx";
+import TelemetryItem from "./telemetryItem.jsx";
 
 const Telemetry = props => {
   const { telemetry } = props;
@@ -10,7 +10,9 @@ const Telemetry = props => {
   return (
     <div className="card">
       <div className="card-body">
-        <h5 className="card-title">Telemetry</h5>
+        <div className="card-title">
+          <span className="text">Telemetry</span>
+        </div>
         <ul className="list-group" style={telemetryStyles}>
           {mapTelemetryItems(telemetryItems)}
         </ul>
@@ -23,7 +25,7 @@ const mapTelemetryItems = telemetryItems => {
   let jsx = [];
   for (const itemName in telemetryItems) {
     jsx.push(
-      <LogItem
+      <TelemetryItem
         key={itemName}
         label={itemName}
         message={telemetryItems[itemName]}

@@ -1,13 +1,16 @@
-import React from 'react'
+import React from "react";
+import ConnectionLabel from "./connectionLabel.jsx";
 
-const NavBar = () => {
+const NavBar = props => {
+  const { connected } = props;
   return (
-    <nav className="navbar navbar-expand-lg navbar-light bg-light">
-      <a className="navbar-brand" href="/#">
-        8865 The Intersect
-      </a>
+    <nav className="navbar navbar-expand-sm navbar-light border-bottom">
+      <span className="navbar-brand">
+        <img src="/logo.png" height={35} alt="" />
+      </span>
+      <ConnectionLabel connected={connected} />
     </nav>
-  )
-}
+  );
+};
 
-export default NavBar
+export default NavBar;
