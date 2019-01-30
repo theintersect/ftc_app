@@ -145,19 +145,19 @@ class DriveTrain(val opMode: LinearOpMode, val wss: WebsocketTask? = null, val r
 
         val constants = getPIDConstantsFromFile("pid_drive.json")
 
-        val lPID = PIDController(constants, lTarget)
-        val rPID = PIDController(constants, rTarget)
+        val lPID = PIDController(constants, lTarget, broadcast = true, wss = wss)
+        val rPID = PIDController(constants, rTarget, broadcast = true, wss = wss)
 
         lPID.initController(leftPos)
         rPID.initController(rightPos)
 
-        while (opMode.opModeIsActive() && !opMode.isStopRequested &&
-                lPID.prevError!! > minError && rPID.prevError!! > minError) {
+        do {
             setPowers(
                     lPID.output(leftMotors.getAvgCurrentPositon()),
                     rPID.output(rightMotors.getAvgCurrentPositon())
             )
-        }
+        } while (opMode.opModeIsActive() && !opMode.isStopRequested &&
+                Math.abs(lPID.prevError!!) > minError && Math.abs(rPID.prevError!!) > minError)
 
         stopAll()
     }

@@ -20,7 +20,7 @@ const getBadgeText = connected => {
 const getBadgeClasses = connected => {
   let classes = "badge badge-pill ml-auto badge-";
   if (connected) {
-    return classes + "secondary";
+    return classes + "success";
   } else {
     return classes + "danger";
   }

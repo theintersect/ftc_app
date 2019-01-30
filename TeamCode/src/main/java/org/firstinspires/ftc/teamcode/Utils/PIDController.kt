@@ -20,6 +20,11 @@ public class PIDController(val pidConstants: PIDConstants, val desiredVal: Doubl
         clearFile("pidReadout.txt")
     }
 
+    fun cap(value: Double, max: Double, min: Double): Double {
+        return Math.max(Math.min(value, max),min)
+    }
+
+
     fun output(actualVal: Double,adjustError:(Double)-> Double = {it}): Double {
         if (prevTime != null && prevError != null) {
             val e: Double = adjustError(desiredVal - actualVal)
@@ -33,7 +38,7 @@ public class PIDController(val pidConstants: PIDConstants, val desiredVal: Doubl
             val I = runningI
             println(dt)
             println(runningI)
-            val D = -pidConstants.kD * de / dt
+            val D = cap(-pidConstants.kD * de / dt, 0.15, -0.15)
 
 //            if(e>0){
 //                if(D>0){

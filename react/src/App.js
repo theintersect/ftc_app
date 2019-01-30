@@ -69,8 +69,8 @@ export default class App extends Component {
   };
 
   initSocket = () => {
-    // const url = "ws://192.168.49.1:8887";
-    const url = "ws://localhost:8080";
+    const url = "ws://192.168.49.1:8887";
+    // const url = "ws://localhost:8080";
     let socket = null;
     console.log("Connecting socket...");
     socket = new WebSocket(url);
@@ -85,7 +85,7 @@ export default class App extends Component {
       this.setState({ connected: false });
       setTimeout(() => {
         this.initSocket();
-      }, 2000);
+      }, 1000);
     };
 
     socket.onmessage = message => {
@@ -96,16 +96,19 @@ export default class App extends Component {
 
       switch (event) {
         case "pid":
-          const pidChart = this.state.pidChart.addData(body.ts, [
-            body.p,
-            body.i,
-            body.d,
-            body.output
-          ]);
-          const errorChart = this.state.errorChart.addData(body.ts, [
-            body.error
-          ]);
-          this.setState({ pidChart: pidChart, errorChart: errorChart });
+          setTimeout(() => {
+            const pidChart = this.state.pidChart.addData(body.ts, [
+              body.p,
+              body.i,
+              body.d,
+              body.output
+            ]);
+            const errorChart = this.state.errorChart.addData(body.ts, [
+              body.error
+            ]);
+            this.setState({ pidChart: pidChart, errorChart: errorChart });
+
+          }, 0)
           break;
         case "telemetry":
           const telemetry = this.state.telemetry.addData(body.name, body.value);

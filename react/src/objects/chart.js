@@ -1,9 +1,11 @@
 export default class ChartObject {
-  constructor(title, xLabel, dataTypes, data = []) {
+  constructor(title, xLabel, dataTypes, data = [], isFirst=true, offset=0) {
     this.title = title;
     this.xLabel = xLabel;
     this.dataTypes = dataTypes;
     this.data = data;
+    this.isFirst = isFirst;
+    this.offset = offset;
   }
 
   clear() {
@@ -17,12 +19,16 @@ export default class ChartObject {
     }
     let newData = [...this.data];
     let datapoint = {};
-    datapoint[this.xLabel] = xValue;
+    if(this.isFirst){
+      this.offset = xValue
+      this.isFirst = false
+    }
+    datapoint[this.xLabel] = (xValue - this.offset) / 1000;
     for (let i = 0; i < this.dataTypes.length; i++) {
       datapoint[this.dataTypes[i]] = data[i];
     }
     console.log(datapoint);
     newData.push(datapoint);
-    return new ChartObject(this.title, this.xLabel, this.dataTypes, newData);
+    return new ChartObject(this.title, this.xLabel, this.dataTypes, newData, this.isFirst, this.offset);
   }
 }
