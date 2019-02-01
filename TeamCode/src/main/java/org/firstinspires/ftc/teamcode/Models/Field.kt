@@ -16,31 +16,33 @@ class Field(val dt: DriveTrain) {
     var currentX = 0.0
     var currentY = 0.0
 
-    fun isOutOfBounds(x: Double, y: Double) = (x > fieldX || x < 0 || y > fieldY || y < 0)
+
+
+    fun isOutOfBounds(x: Double, y: Double) = (false)
 
     fun registerPosition(x: Double, y: Double, angle: Double) {
         if (isOutOfBounds(x, y)) {
             l.log("($currentX,$currentY) is out of bounds!")
             throw RuntimeException("($currentX,$currentY) is out of bounds")
         }
-        this.currentX = Math.max(Math.min(x, fieldX), 0.0)
-        this.currentY = Math.max(Math.min(y, fieldY), 0.0)
+        this.currentX = x
+        this.currentY = y
         this.currentAngle = angle
-        if (this.currentX != x) l.log("Wrapped X value from $x => $currentX")
-        if (this.currentY != y) l.log("Wrapped Y value from $y => $currentY")
+//        if (this.currentX != x) l.log("Wrapped X value from $x => $currentX")
+//        if (this.currentY != y) l.log("Wrapped Y value from $y => $currentY")
         l.log("Registered position: ($currentX,$currentY,$currentAngle)")
     }
 
     fun moveTo(x: Double, y: Double) {
         l.log("moveTo($x,$y) called")
         val angle = Math.toDegrees(Math.atan((y - currentY) / (x - currentX)))
-        val dist = Math.sqrt((x - currentX)) * ((x - currentX) + (y - currentY)) * ((y - currentY))
+        val dist = Math.hypot(x - currentX, y - currentY)
         l.logData("Calculated angle", angle)
         l.logData("Calculated distance", dist)
         dt.rotateTo(angle)
         wait(500)
         l.logData("Actual angle", dt.imu.angle)
-        dt.drive(Direction.FORWARD, dist, timeout = 10)
+        dt.drivePID(Direction.FORWARD, dist, timeout = 10)
         wait(500)
         l.logData("Final angle", dt.imu.angle)
         registerPosition(x, y, dt.imu.angle)

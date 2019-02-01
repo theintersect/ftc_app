@@ -13,7 +13,7 @@ import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector
 class Vision(internal var opMode: OpMode) {
     private val l = Logger("VISION")
     private var vuforia: VuforiaLocalizer? = null
-    private var tfod: TFObjectDetector? = null
+    var tfod: TFObjectDetector? = null
     fun startVision() {
         initVuforia()
         initTfod()

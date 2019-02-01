@@ -46,6 +46,8 @@ class WebsocketTask(opMode: LinearOpMode): Task(opMode, "WEBSOCKET_TASK"){
         }
     }
 
+
+
     override fun stopThread(){
         this.server.stop(1000)
         l.log("KILLED SERVER")

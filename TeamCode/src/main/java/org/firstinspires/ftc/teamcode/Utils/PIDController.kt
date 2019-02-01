@@ -3,7 +3,9 @@ package org.firstinspires.ftc.teamcode.Utils
 import com.google.gson.JsonObject
 import org.firstinspires.ftc.teamcode.Models.PIDConstants
 import org.firstinspires.ftc.teamcode.Tasks.WebsocketTask
+import org.json.JSONException
 import org.json.JSONObject
+import java.lang.Exception
 
 
 public class PIDController(val pidConstants: PIDConstants, val desiredVal: Double,val broadcast:Boolean=false,val wss:WebsocketTask? = null) {
@@ -38,7 +40,7 @@ public class PIDController(val pidConstants: PIDConstants, val desiredVal: Doubl
             val I = runningI
             println(dt)
             println(runningI)
-            val D = cap(-pidConstants.kD * de / dt, 0.15, -0.15)
+            val D = cap(-pidConstants.kD * de / dt, 0.5, -0.5)
 
 //            if(e>0){
 //                if(D>0){
@@ -72,21 +74,27 @@ public class PIDController(val pidConstants: PIDConstants, val desiredVal: Doubl
 
             prevError = e
             prevTime = currentTime
-            val message =  JSONObject()
-                    .put("ts",System.currentTimeMillis())
-                    .put("error",e)
-                    .put("de",de)
-                    .put("dt",dt)
-                    .put("p",P)
-                    .put("i",I)
-                    .put("d",D)
-                    .put("output",output)
+            try{
+                val message =  JSONObject()
+                        .put("ts",System.currentTimeMillis())
+                        .put("error",e)
+                        .put("de",de)
+                        .put("dt",dt)
+                        .put("p",P)
+                        .put("i",I)
+                        .put("d",D)
+                        .put("output",output)
 
-            l.log(message.toString())
-            if(broadcast && wss != null){
-                wss.server.broadcastData("pid", message)
+                l.log(message.toString())
+                if(broadcast && wss != null){
+                    wss.server.broadcastData("pid", message)
+                }
+                writeFile("pidReadout.txt",content=message.toString(),overWrite = false)
+            }catch(e:java.lang.Exception){
+                l.log(e.message!!)
+            } catch(e:JSONException){
+                l.log(e.message!!)
             }
-            writeFile("pidReadout.txt",content=message.toString(),overWrite = false)
 
             return output
         } else {

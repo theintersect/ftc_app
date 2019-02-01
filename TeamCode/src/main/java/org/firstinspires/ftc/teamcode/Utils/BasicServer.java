@@ -22,6 +22,7 @@ public class BasicServer extends WebSocketServer {
 //        super( address );
 //    }
 
+//    public void addTelemetry(String variable, )
 
     public void broadcastMessage(JSONObject json){
         broadcastMessage(json.toString());

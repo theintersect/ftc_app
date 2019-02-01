@@ -111,7 +111,7 @@ export default class App extends Component {
           }, 0)
           break;
         case "telemetry":
-          const telemetry = this.state.telemetry.addData(body.name, body.value);
+          const telemetry = this.state.telemetry.addData(body.variable, body.value);
           this.setState({ telemetry: telemetry });
           break;
         case "log":

@@ -17,6 +17,7 @@ class  Auto: LinearOpMode(){
     val pidRotation: PIDConstants = getPIDConstantsFromFile("pid_rotation.json")
     val pidDrive: PIDConstants = getPIDConstantsFromFile("pid_drive.json")
     var dt:DriveTrain? = null
+    var vision: Vision? = null
 
 
     init{
@@ -30,6 +31,8 @@ class  Auto: LinearOpMode(){
         l.log("waiting for start")
         telemetry.update()
         dt = DriveTrain(this,drivePIDConstants = pidDrive, rotationPIDConstants = pidRotation)
+        vision = Vision(this)
+        vision!!.startVision()
         val arms = Arms(this)
         val armStoppers = ArmStoppers(this)
         val sweeper = Sweeper(this)
@@ -43,19 +46,27 @@ class  Auto: LinearOpMode(){
 
         l.log("Opmode Started")
         if(opModeIsActive() && !isStopRequested){
-            armStoppers.unlock()
-            wait(1000)
-            arms.moveDegrees(Direction.SPIN_CCW, 0.1, -5)
-            l.log("0")
-            wait(1000)
-            hook.unlatch()
-            dt!!.drive(Direction.FORWARD,44.0,10)
-            l.log("1")
+//            armStoppers.unlock()
+//            wait(1000)
+//            arms.moveDegrees(Direction.SPIN_CCW, 0.1, -5)
+//            l.log("0")
+//            wait(1000)
+//            hook.unlatch()
+//            dt!!.drive(Direction.FORWARD,44.0,10)
+//            l.log("1")
+//            wait(500)
+
+            alignToGold()
             wait(500)
+            dt!!.drivePID(Direction.BACKWARD, 24.0, 10)
+            wait(500)
+            dt!!.drivePID(Direction.FORWARD, 24.0, 10)
+            wait(500)
+
             dt!!.rotate(Direction.SPIN_CCW,40,10)
             l.log("2")
             wait(500)
-            dt!!.drive(Direction.FORWARD,5.0,10)
+            dt!!.drivePID(Direction.BACKWARD,5.0,10)
             l.log("3")
             wait(500)
             dumper.setDumpPosition()
@@ -69,7 +80,7 @@ class  Auto: LinearOpMode(){
             dumper.setNormalPosition()
             l.log("5")
             wait(500)
-            dt!!.drive(Direction.BACKWARD, 61.0, 10)
+            dt!!.drivePID(Direction.FORWARD, 61.0, 10)
             arms.moveDegrees(Direction.SPIN_CCW, 0.1, -90)
 
 //            alignToGold()
@@ -78,21 +89,38 @@ class  Auto: LinearOpMode(){
     }
 
     fun alignToGold():Boolean{
-        val vision = Vision(this)
+        var d = vision!!.detectRobust(5, 100)
         val maxRotations = 10
-        val centerPosition = 500
-        val pixelThreshold = 50
-        var detection = -1
-        for(i in 1..maxRotations){
-            dt!!.rotate(Direction.SPIN_CW,5,3)
-            detection = vision.detectRobust(10,1)
-            l.logData("detection",detection)
-            if(Math.abs( detection- centerPosition) < pixelThreshold){
-                l.log("Detected.")
+        val threshold = 450
+        for (i in 1..maxRotations) {
+            l.log("spinning..")
+            dt!!.rotate(Direction.SPIN_CW, 10, 5)
+            d = vision!!.detectRobust(5,100)
+            l.logData("detect",d)
+            if (d > 450) {
+                vision!!.shutDown()
+                l.logData("MINERAL DETECTED", d)
                 return true
             }
         }
+        vision!!.shutDown()
+        l.logData("DID NOT DETECT", d)
         return false
+//        val vision = Vision(this)
+//        val maxRotations = 10
+//        val centerPosition = 500
+//        val pixelThreshold = 50
+//        var detection = -1
+//        for(i in 1..maxRotations){
+//            dt!!.rotate(Direction.SPIN_CW,5,3)
+//            detection = vision.detectRobust(10,1)
+//            l.logData("detection",detection)
+//            if(Math.abs( detection- centerPosition) < pixelThreshold){
+//                l.log("Detected.")
+//                return true
+//            }
+//        }
+//        return false
     }
 
 }
