@@ -41,7 +41,7 @@ class DriveTrain(val opMode: LinearOpMode, val wss: WebsocketTask? = null, val r
         rightMotors.addMotor(rfDrive)
 
         driveMotors.useEncoders()
-        driveMotors.motors.forEach({it.motor.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE})
+        driveMotors.motors.forEach({ it.motor.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE })
 
         l.log("Initialized motors")
         l.log("Websocket initialized: ${wss != null}")
@@ -49,7 +49,8 @@ class DriveTrain(val opMode: LinearOpMode, val wss: WebsocketTask? = null, val r
         l.log("Drive PIO: ${drivePIDConstants}")
 //        initMotors()
     }
-    fun normalizePower(input:Double):Double{
+
+    fun normalizePower(input: Double): Double {
 //        if (input < 0) {
 //            return Math.max(input, -MAX_POWER)
 //        } else {
@@ -58,10 +59,11 @@ class DriveTrain(val opMode: LinearOpMode, val wss: WebsocketTask? = null, val r
 
         return input
     }
+
     fun setPowers(lPower: Double, rPower: Double) {
 //        rfDrive.setPower(lPower)
-        l.logData("lPow",lPower)
-        l.logData("rPow",rPower)
+        l.logData("lPow", lPower)
+        l.logData("rPow", rPower)
 
         leftMotors.setPower(normalizePower(lPower))
         rightMotors.setPower(normalizePower(rPower))
@@ -105,7 +107,7 @@ class DriveTrain(val opMode: LinearOpMode, val wss: WebsocketTask? = null, val r
         driveMotors.prepareEncoderDrive()
 
         val ticks = (dir.intRepr * Values.TICKS_PER_INCH_FORWARD * dist).toInt()
-        l.logData("tix",ticks)
+        l.logData("tix", ticks)
         lfDrive.setTargetPosition(lfDrive.motor.currentPosition + ticks)
         rfDrive.setTargetPosition(rfDrive.motor.currentPosition + ticks)
         lbDrive.setTargetPosition(lbDrive.motor.currentPosition + ticks)
@@ -181,14 +183,26 @@ class DriveTrain(val opMode: LinearOpMode, val wss: WebsocketTask? = null, val r
 
     fun rotateTo(targetHeading: Double, timeout: Int = 10, broadcast: Boolean = false) {
         val minError = 2
-        val minPower = 2.0
-        val constants = getPIDConstantsFromFile("pid_rotation.json")
+//        val constants = getPIDConstantsFromFile("pid_rotation.json")
+
+        var currentHeading: Double = imu.angle
+        var error = fixAngle(targetHeading - currentHeading)
+
+        val constants: PIDConstants = if (Math.abs(error) < 20) {
+            getPIDConstantsFromFile("pid_10.json")
+        } else if (Math.abs(error) < 60) {
+            getPIDConstantsFromFile("pid_45.json")
+        } else if (Math.abs(error) < 120) {
+            getPIDConstantsFromFile("pid_90.json")
+        } else {
+            getPIDConstantsFromFile("pid_180.json")
+        }
+
+
         //todo: remove
 //        val pid = PIDController(rotationPIDConstants, targetHeading, broadcast = broadcast, wss = wss)
         val pid = PIDController(constants, targetHeading, broadcast = broadcast, wss = wss)
 
-        var currentHeading: Double = imu.angle
-        var error = fixAngle(targetHeading - currentHeading)
 
 //        val dir = if (error > 0) {
 //            Direction.SPIN_CW
@@ -210,7 +224,7 @@ class DriveTrain(val opMode: LinearOpMode, val wss: WebsocketTask? = null, val r
 //            } else {
 //                Math.min(proportionalPower - 0.1, -minPower)
 //            }
-            l.logData("Direction",dir.toString())
+            l.logData("Direction", dir.toString())
             move(dir, proportionalPower)
 
 //            if (dir == Direction.SPIN_CW && error < minError) {
