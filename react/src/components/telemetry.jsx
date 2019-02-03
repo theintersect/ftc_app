@@ -5,7 +5,7 @@ const Telemetry = props => {
   const { telemetry } = props;
   const { telemetryItems } = telemetry;
 
-  const telemetryStyles = { fontFamily: "Consolas", fontSize: "12px" };
+  const telemetryStyles = { fontFamily: "courier", fontSize: "18px" };
 
   return (
     <div className="card">
@@ -13,9 +13,15 @@ const Telemetry = props => {
         <div className="card-title">
           <span className="text">Telemetry</span>
         </div>
-        <ul className="list-group" style={telemetryStyles}>
-          {mapTelemetryItems(telemetryItems)}
-        </ul>
+        <table className="table table-striped table-hover table-sm" style={telemetryStyles}>
+        <thead>
+          <td>Variable</td>
+          <td>Value</td>
+        </thead>
+        <tbody>
+        {mapTelemetryItems(telemetryItems)}
+        </tbody>
+        </table>
       </div>
     </div>
   );

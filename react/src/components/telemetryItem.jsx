@@ -3,9 +3,17 @@ const telemetryStyles = { fontFamily: "courier", fontSize: "18px" };
 
 const TelemetryItem = props => {
   return (
-    <li className="list-group-item" style={telemetryStyles}>
-      {formatLogItem(props.label, props.message)}
-    </li>
+    <tr style={telemetryStyles}>
+      <td>
+        {props.label}
+      </td>
+      <td>
+        {props.message}
+      </td>
+    </tr>
+    // <li className="list-group-item" style={telemetryStyles}>
+    //   {formatLogItem(props.label, props.message)}
+    // </li>
   );
 };
 
