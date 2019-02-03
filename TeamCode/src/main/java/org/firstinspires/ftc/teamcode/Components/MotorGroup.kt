@@ -57,4 +57,8 @@ open class MotorGroup() {
         motors.forEach({it.motor.mode = mode})
     }
 
+    fun setZeroPowerBehavior(behavior: DcMotor.ZeroPowerBehavior){
+        motors.forEach({it.motor.zeroPowerBehavior = behavior})
+    }
+
 }

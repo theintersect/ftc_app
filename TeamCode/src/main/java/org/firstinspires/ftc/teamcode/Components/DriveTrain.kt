@@ -181,10 +181,9 @@ class DriveTrain(val opMode: LinearOpMode, val wss: WebsocketTask? = null, val r
         return fixedAngle
     }
 
-    fun rotateTo(targetHeading: Double, timeout: Int = 10, broadcast: Boolean = false) {
+    fun rotateTo(targetHeading: Double, timeout: Int = 3, broadcast: Boolean = true) {
         val minError = 2
 //        val constants = getPIDConstantsFromFile("pid_rotation.json")
-
         var currentHeading: Double = imu.angle
         var error = fixAngle(targetHeading - currentHeading)
 
@@ -199,7 +198,6 @@ class DriveTrain(val opMode: LinearOpMode, val wss: WebsocketTask? = null, val r
         }
 
 
-        //todo: remove
 //        val pid = PIDController(rotationPIDConstants, targetHeading, broadcast = broadcast, wss = wss)
         val pid = PIDController(constants, targetHeading, broadcast = broadcast, wss = wss)
 
@@ -212,6 +210,7 @@ class DriveTrain(val opMode: LinearOpMode, val wss: WebsocketTask? = null, val r
         val dir = Direction.SPIN_CCW
 
         pid.initController(currentHeading)
+        val stopTime = System.currentTimeMillis() + timeout*1000
         do {
             currentHeading = imu.getAngle()
             error = fixAngle(targetHeading - currentHeading)
@@ -240,7 +239,13 @@ class DriveTrain(val opMode: LinearOpMode, val wss: WebsocketTask? = null, val r
                 currentHeading = imu.getAngle()
                 pid.output(currentHeading, this::fixAngle)
             }
-        } while (opMode.opModeIsActive() && !opMode.isStopRequested && Math.abs(pid.prevError!!) > minError)
+            if(System.currentTimeMillis() > stopTime){
+                l.log("TIMED OUT")
+                l.logData("Current time" , System.currentTimeMillis())
+                l.logData("TO Time",stopTime)
+                break
+            }
+        } while (opMode.opModeIsActive() && !opMode.isStopRequested && Math.abs(pid.prevError!!) > minError )
         stopAll()
     }
 

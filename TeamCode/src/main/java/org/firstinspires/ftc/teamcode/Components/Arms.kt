@@ -20,6 +20,7 @@ class Arms(opMode:LinearOpMode):MotorGroup(){
         this.addMotor(lArm)
         this.addMotor(rArm)
         this.useEncoders()
+        this.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE)
     }
 
     fun run(reverse: Boolean = false, power: Double = 1.0) {
