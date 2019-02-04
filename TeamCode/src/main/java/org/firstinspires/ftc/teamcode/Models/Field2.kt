@@ -3,6 +3,8 @@ package org.firstinspires.ftc.teamcode.Models
 import org.firstinspires.ftc.teamcode.Components.DriveTrain
 import org.firstinspires.ftc.teamcode.Tasks.WebsocketTask
 import org.firstinspires.ftc.teamcode.Utils.Logger
+import org.firstinspires.ftc.teamcode.Models.Coordinate
+
 import org.json.JSONObject
 
 class Field2(val dt: DriveTrain) {
@@ -58,12 +60,10 @@ class Field2(val dt: DriveTrain) {
 
         registerPosition(x, y)
 
-//        wsTask?.server?.broadcastData("telemetry",
-//                JSONObject().put("variable", "x").put("value", currentX)
-//        )
-//        wsTask?.server?.broadcastData("telemetry",
-//                JSONObject().put("variable", "y").put("value", currentY)
-//        )
         return this
+    }
+
+    fun moveTo(coords:Coordinate, direction: Direction): Field2 {
+        return moveTo(coords.x.toDouble(),coords.y.toDouble(),direction)
     }
 }

@@ -4,6 +4,8 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import org.firstinspires.ftc.teamcode.Components.*
 import org.firstinspires.ftc.teamcode.Models.Direction
 import org.firstinspires.ftc.teamcode.Models.Field2
+import org.firstinspires.ftc.teamcode.Models.Coordinate
+
 import org.firstinspires.ftc.teamcode.Models.PIDConstants
 import org.firstinspires.ftc.teamcode.Tasks.WebsocketTask
 import org.firstinspires.ftc.teamcode.Utils.Logger
@@ -31,12 +33,8 @@ class  Auto: LinearOpMode(){
 
     override fun runOpMode() {
         wsTask.start()
-
-        l.log("waiting for start")
         telemetry.update()
         dt = DriveTrain(this,drivePIDConstants = pidDrive, rotationPIDConstants = pidRotation, wss = wsTask)
-        vision = Vision(this)
-        vision!!.startVision()
         val arms = Arms(this)
         val armStoppers = ArmStoppers(this)
         val sweeper = Sweeper(this)
@@ -49,23 +47,42 @@ class  Auto: LinearOpMode(){
         armStoppers.lock()
         arms.setPower(0.0)
 
+        vision = Vision(this)
+        vision!!.startVision()
+        l.log("Init fininshed, waiting for start..")
+
         waitForStart()
 
         l.log("Opmode Started")
         if(opModeIsActive() && !isStopRequested){
             val position = threePointGold()
+            val positionIndex = position - 1
             l.logData("Detected position",position)
+
             val goldPositions = arrayOf(
-                    arrayOf(48, -24),
-                    arrayOf(36, -36),
-                    arrayOf(24, -48)
-                    )
-            val directions = arrayOf(Direction.BACKWARD, Direction.BACKWARD, Direction.BACKWARD)
-            val directionsSecondDrive = arrayOf(Direction.BACKWARD, Direction.BACKWARD, Direction.BACKWARD)
+                    Coordinate(48, -24), //position 1 (x,y)
+                    Coordinate(36, -36), //position 2 (x,y)
+                    Coordinate(24, -48)  //position 3 (x,y)
+            )
+            val directions = arrayOf(
+                    Direction.BACKWARD,
+                    Direction.BACKWARD,
+                    Direction.BACKWARD
+            )
+            val directionsSecondDrive = arrayOf(
+                    Direction.BACKWARD,
+                    Direction.BACKWARD,
+                    Direction.BACKWARD
+            )
+
+            val markerDumperCoordinate =      Coordinate(56,-56)
+            val avoidanceWaypointCoordinate = Coordinate(24,-66)
+            val craterCoordinate =            Coordinate(-35,-64)
 
             field
-                    .moveTo(goldPositions[position-1][0].toDouble(), goldPositions[position-1][1].toDouble(), directions[position-1])
-                    .moveTo(56.0,-56.0, directionsSecondDrive[position-1])
+                .moveTo(goldPositions[positionIndex], directions[positionIndex])
+                .moveTo(markerDumperCoordinate, directionsSecondDrive[positionIndex])
+
             dt!!.rotateTo(-45.0)
             dumper.setDumpPosition()
             sleep(800)
@@ -74,8 +91,8 @@ class  Auto: LinearOpMode(){
             dumper.setDumpPosition()
 
             field
-                    .moveTo(24.0,-66.0,Direction.FORWARD)
-                    .moveTo(-35.0,-64.0,Direction.FORWARD)
+                .moveTo(avoidanceWaypointCoordinate,Direction.FORWARD)
+                .moveTo(craterCoordinate,Direction.FORWARD)
 
 //            armStoppers.unlock()
 //            wait(1000)
@@ -87,34 +104,7 @@ class  Auto: LinearOpMode(){
 //            l.log("1")
 //            wait(500)
 
-//            alignToGold()
-//            wait(500)
-//            dt!!.drivePID(Direction.BACKWARD, 24.0, 10)
-//            wait(500)
-//            dt!!.drivePID(Direction.FORWARD, 24.0, 10)
-//            wait(500)
-//
-//            dt!!.rotate(Direction.SPIN_CCW,40,10)
-//            l.log("2")
-//            wait(500)
-//            dt!!.drivePID(Direction.BACKWARD,5.0,10)
-//            l.log("3")
-//            wait(500)
-//            dumper.setDumpPosition()
-//            l.log("4")
-//            wait(500)
-//            dumper.setNormalPosition()
-//            wait(500)
-//            dumper.setDumpPosition()
-//            l.log("4")
-//            wait(500)
-//            dumper.setNormalPosition()
-//            l.log("5")
-//            wait(500)
-//            dt!!.drivePID(Direction.FORWARD, 61.0, 10)
-//            arms.moveDegrees(Direction.SPIN_CCW, 0.1, -90)
 
-//            alignToGold()
         }
         wsTask.stopThread()
 
@@ -133,7 +123,7 @@ class  Auto: LinearOpMode(){
         }
         vision!!.shutDown()
         l.log("DID NOT DETECT")
-        return -1
+        return 2 //return middle position when failed to detect
     }
 
     fun alignToGold():Boolean{
