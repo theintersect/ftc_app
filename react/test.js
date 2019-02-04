@@ -13,8 +13,11 @@ wss.on('connection', function connection(ws) {
         {
             event:"telemetry",
             body:{
-                variable:"x",
-                value:Date.now()
+            "x":52,
+            "y":124,
+            "isRunning":true,
+            "frankisgay":true,
+            "antonStatus":"not gay"
             }
             
         }

@@ -14,12 +14,10 @@ public class PIDController(val pidConstants: PIDConstants, val desiredVal: Doubl
     var runningI: Double = 0.0
     val l:Logger = Logger("PID")
 
-
-
     fun initController(actualVal: Double) {
         prevTime = System.currentTimeMillis()
         prevError = desiredVal - actualVal
-        clearFile("pidReadout.txt")
+//        clearFile("pidReadout.txt")
     }
 
     fun cap(value: Double, max: Double, min: Double): Double {
@@ -38,27 +36,9 @@ public class PIDController(val pidConstants: PIDConstants, val desiredVal: Doubl
             l.log("${pidConstants.kP} * $e = $P")
             runningI += -pidConstants.kI * e * dt
             val I = runningI
-            println(dt)
-            println(runningI)
+
             val D = cap(-pidConstants.kD * de / dt, 0.5, -0.5)
 
-//            if(e>0){
-//                if(D>0){
-//                    //error is positive and slope is positive, moving further away.
-//                    D*=-1
-//                }else{
-//                    //error is pos but moving negative, good. make D positive.
-//                }
-//            }else{
-//                if(D>0){
-//                    //error is neg and slope is positive, moving closer to desired.
-//                }else{
-//                    //error is neg and slope is neg, moving further to desired.
-//                    D*=-1
-//                }
-//            }
-
-            println(D)
             val output = P + I + D
 
             l.lineBreak()
@@ -75,7 +55,7 @@ public class PIDController(val pidConstants: PIDConstants, val desiredVal: Doubl
             prevError = e
             prevTime = currentTime
             try{
-                val message =  JSONObject()
+                val message = JSONObject()
                         .put("ts",System.currentTimeMillis())
                         .put("error",e)
                         .put("de",de)
@@ -84,12 +64,10 @@ public class PIDController(val pidConstants: PIDConstants, val desiredVal: Doubl
                         .put("i",I)
                         .put("d",D)
                         .put("output",output)
-
-                l.log(message.toString())
                 if(broadcast && wss != null){
                     wss.server.broadcastData("pid", message)
                 }
-                writeFile("pidReadout.txt",content=message.toString(),overWrite = false)
+//                writeFile("pidReadout.txt",content=message.toString(),overWrite = false)
             }catch(e:java.lang.Exception){
                 l.log(e.message!!)
             } catch(e:JSONException){

@@ -19,7 +19,6 @@ class ArmTask(opMode: LinearOpMode): Task(opMode, "ARM_TASK"){
         } else {
             arms.stop()
         }
-
     }
 
 }
