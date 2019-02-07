@@ -13,10 +13,8 @@ class Hook(val opMode: LinearOpMode):Servo(opMode.hardwareMap,"hookServo"){
     val unlatchPosition = 100
 
     init {
-
         l.log("entered init")
         this.setDirection(servoDirection)
-
     }
 
     fun latch() {

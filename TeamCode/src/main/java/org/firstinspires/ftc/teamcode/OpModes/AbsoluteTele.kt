@@ -4,14 +4,10 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import org.firstinspires.ftc.teamcode.Components.DriveTrain
 import org.firstinspires.ftc.teamcode.Models.Direction
 import org.firstinspires.ftc.teamcode.Models.Field
-import org.firstinspires.ftc.teamcode.Models.Field2
 import org.firstinspires.ftc.teamcode.Models.PIDConstants
 import org.firstinspires.ftc.teamcode.Tasks.WebsocketTask
 import org.firstinspires.ftc.teamcode.Utils.Logger
-import org.firstinspires.ftc.teamcode.Utils.WSS
 import org.firstinspires.ftc.teamcode.Utils.getPIDConstantsFromFile
-import org.firstinspires.ftc.teamcode.Utils.wait
-import org.json.JSONObject
 
 @com.qualcomm.robotcore.eventloop.opmode.TeleOp(name = "Absolute Positioning Test")
 
@@ -38,7 +34,7 @@ class AbsoluteTele : LinearOpMode() {
         wsTask.start()
         val dt = DriveTrain(this, drivePIDConstants = pidDrive, rotationPIDConstants = pidRotation, wss = wsTask)
 //        val field = Field(dt)
-        val field = Field2(dt)
+        val field = Field(dt)
         l.log("initialized field")
         waitForStart()
 

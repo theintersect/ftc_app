@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode.OpModes
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import org.firstinspires.ftc.teamcode.Components.*
 import org.firstinspires.ftc.teamcode.Models.Direction
-import org.firstinspires.ftc.teamcode.Models.Field2
+import org.firstinspires.ftc.teamcode.Models.Field
 import org.firstinspires.ftc.teamcode.Models.Coordinate
 
 import org.firstinspires.ftc.teamcode.Models.PIDConstants
@@ -12,7 +12,6 @@ import org.firstinspires.ftc.teamcode.Utils.Logger
 import org.firstinspires.ftc.teamcode.Utils.Vision
 
 import org.firstinspires.ftc.teamcode.Utils.getPIDConstantsFromFile
-import org.firstinspires.ftc.teamcode.Utils.wait
 
 @com.qualcomm.robotcore.eventloop.opmode.Autonomous(name = "Auto")
 
@@ -40,7 +39,7 @@ class  Auto: LinearOpMode(){
         val sweeper = Sweeper(this)
         val hook = Hook(this)
         val dumper = Dumper(this,"dumper")
-        val field = Field2(dt!!)
+        val field = Field(dt!!)
         field.initialize(18.0, -18.0, 135.0)
         dumper.setNormalPosition()
         hook.latch()
