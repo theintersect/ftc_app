@@ -44,8 +44,8 @@ class Motor(val hardwareMap: HardwareMap,val motorName:String ){
         this.motor.targetPosition = target
     }
 
-    fun moveTicks(direction:Direction, power:Double, ticks:Int){
-
+    fun moveTicks(direction:Direction, power:Double, ticks:Int, timeout:Int=5){
+        val stopTime = System.currentTimeMillis() + timeout*1000
         motor.targetPosition = ticks + direction.intRepr * motor.currentPosition
         motor.mode = DcMotor.RunMode.RUN_TO_POSITION
         motor.power = Math.abs(power)
@@ -54,6 +54,11 @@ class Motor(val hardwareMap: HardwareMap,val motorName:String ){
         while (motor.isBusy) {
             l.logData("Current position",motor.currentPosition)
             Thread.sleep(10)
+            if(System.currentTimeMillis() > stopTime){
+                l.log("Timed out")
+                break
+            }
+
         }
         stop()
         motor.mode = DcMotor.RunMode.RUN_USING_ENCODER
