@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple
 import org.firstinspires.ftc.teamcode.Models.Direction
 import org.firstinspires.ftc.teamcode.Utils.wait
 
-class Arms(opMode:LinearOpMode):MotorGroup(){
+class Arms(val opMode:LinearOpMode):MotorGroup(){
 
     val hwMap = opMode.hardwareMap
     val DEGREES_TO_TICKS = 1680.0*4.0/360.0
@@ -37,10 +37,12 @@ class Arms(opMode:LinearOpMode):MotorGroup(){
         rArm.setTargetPosition((rArm.motor.currentPosition + ticks).toInt())
 
         this.setMode(DcMotor.RunMode.RUN_TO_POSITION)
-        run(reverse = true, power = power)
+        setPower(Math.abs(power))
 
-        while (lArm.motor.isBusy && rArm.motor.isBusy) {
+        while (lArm.motor.isBusy && rArm.motor.isBusy && !opMode.isStopRequested && opMode.opModeIsActive()) {
             wait(10)
+            lArm.logInfo()
+
         }
 
         stop()

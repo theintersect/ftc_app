@@ -22,17 +22,16 @@ class DriveTrainTask(opMode:LinearOpMode): Task(opMode, "DRIVETRAIN_TASK"){
         val leftStick = - opMode.gamepad1.left_stick_y.toDouble();
         val rightStick = - opMode.gamepad1.right_stick_y.toDouble();
 
-        if (leftStick != 0.0 || rightStick != 0.0) {
-            l.logData("leftStick", leftStick)
-            l.logData("rightStick", rightStick)
-
-        }
+//        if (leftStick != 0.0 || rightStick != 0.0) {
+//            l.logData("leftStick", leftStick)
+//            l.logData("rightStick", rightStick)
+//        }
 
         dt.setPowers(
                 joyToPower(leftStick),
                 joyToPower(rightStick)
-        );
-        dt.driveMotors.logInfo()
+        )
+//        dt.driveMotors.logInfo()
     }
 
 }

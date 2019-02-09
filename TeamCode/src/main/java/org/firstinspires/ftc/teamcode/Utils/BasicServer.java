@@ -8,7 +8,7 @@ import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.WebSocketServer;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.firstinspires.ftc.teamcode.Models.TelemetryObject
+import org.firstinspires.ftc.teamcode.Models.TelemetryObject;
 /**
  * A simple WebSocketServer implementation. Keeps track of a "chatroom".
  */
@@ -33,12 +33,12 @@ public class BasicServer extends WebSocketServer {
                 .put("ts",System.currentTimeMillis())
                 .put("body", jsonData);
         broadcastMessage(message);
-        l.log("Broadcasted data: \n" + message.toString(4))
+        l.log("Broadcasted data: \n" + message.toString(4));
     }
 
-    public void broadcastTelemetry(telemetryObject:TelemetryObject) throws JSONException{
-        broadcastData("telemetry", telemetryObject);
-    }
+//    public void broadcastTelemetry(TelemetryObject telemetryObject) throws JSONException{
+//        broadcastData("telemetry", telemetryObject);
+//    }
 
     private String getIP(WebSocket conn){
         return conn.getRemoteSocketAddress().getAddress().getHostAddress();

@@ -5,8 +5,8 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 class Dumper(opMode: LinearOpMode, name: String): Servo(opMode.hardwareMap, name) {
 
     val servoDirection = com.qualcomm.robotcore.hardware.Servo.Direction.FORWARD
-    val lockPosition: Int = 0
-    val unlockPosition: Int = 50
+    val lockPosition: Int = 170
+    val unlockPosition: Int = 100
 
     init {
 

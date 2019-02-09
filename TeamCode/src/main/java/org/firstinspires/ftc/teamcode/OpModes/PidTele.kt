@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.OpModes
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
+import org.firstinspires.ftc.teamcode.Components.Arms
 import org.firstinspires.ftc.teamcode.Components.DriveTrain
 import org.firstinspires.ftc.teamcode.Models.Direction
 import org.firstinspires.ftc.teamcode.Models.PIDConstants
@@ -17,16 +18,16 @@ class PidTele: LinearOpMode() {
     val pidRotation: PIDConstants = getPIDConstantsFromFile("pid_rotation.json")
     val pidDrive: PIDConstants = getPIDConstantsFromFile("pid_drive.json")
     val wsTask = WebsocketTask(this)
-
     init {
         l.log("TeleOp initialized.")
     }
 
     override fun runOpMode() {
         val dt = DriveTrain(this,drivePIDConstants = pidDrive, rotationPIDConstants = pidRotation, wss=wsTask)
+        val arms = Arms(this)
+        wsTask.start()
 
         l.log("Waiting for start...")
-        wsTask.start()
         waitForStart()
 
         l.log("Started.")
@@ -54,10 +55,13 @@ class PidTele: LinearOpMode() {
 //                dt.rotate(Direction.SPIN_CW,180,10,broadcast=true)
 //            }
             if (gamepad1.a) {
-                l.log("doing shit")
-                dt.rotate(Direction.SPIN_CCW,10,10,broadcast=true)
+                arms.moveDegrees(Direction.FORWARD,0.05,10)
+//                l.log("doing shit")
+//                dt.rotate(Direction.SPIN_CCW,10,10,broadcast=true)
             } else if (gamepad1.b) {
-                dt.rotate(Direction.SPIN_CW,10,10,broadcast=true)
+                arms.moveDegrees(Direction.BACKWARD,0.05,-10)
+
+//                dt.rotate(Direction.SPIN_CW,10,10,broadcast=true)
             } else if (gamepad1.x) {
                 dt.rotate(Direction.SPIN_CCW,20,10,broadcast=true)
             } else if (gamepad1.y) {

@@ -62,8 +62,8 @@ class DriveTrain(val opMode: LinearOpMode, val wss: WebsocketTask? = null, val r
 
     fun setPowers(lPower: Double, rPower: Double) {
 //        rfDrive.setPower(lPower)
-        l.logData("lPow", lPower)
-        l.logData("rPow", rPower)
+//        l.logData("lPow", lPower)
+//        l.logData("rPow", rPower)
 
         leftMotors.setPower(normalizePower(lPower))
         rightMotors.setPower(normalizePower(rPower))
@@ -123,7 +123,7 @@ class DriveTrain(val opMode: LinearOpMode, val wss: WebsocketTask? = null, val r
         val startTime = System.currentTimeMillis()
         while (lfDrive.motor.isBusy && rfDrive.motor.isBusy &&
                 lbDrive.motor.isBusy && rbDrive.motor.isBusy &&
-                System.currentTimeMillis() < startTime + timeout * 1000) {
+                System.currentTimeMillis() < startTime + timeout * 1000 && opMode.opModeIsActive() && !opMode.isStopRequested) {
             wait(10)
             driveMotors.logInfo()
         }

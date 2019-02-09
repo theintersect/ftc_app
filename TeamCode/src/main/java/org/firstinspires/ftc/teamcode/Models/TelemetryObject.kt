@@ -4,7 +4,7 @@ import org.json.JSONException
 import org.json.JSONObject
 
 class TelemetryObject() {
-    var json = new JSONObject()
+    var json = JSONObject()
 
     fun addVar(name:String, value:Int):TelemetryObject{
         this.json.put(name,value)
