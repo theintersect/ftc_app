@@ -21,12 +21,12 @@ open class Servo(val hardwareMap: HardwareMap, val name:String){
 //        l.logData("POSITION", targetPosition)
         servo.position = targetPosition
         if(blockUntilFinished){
-            while(Math.abs(servo.position-targetPosition) < POSITION_BLOCKING_THRESHOLD){
-                l.log("Blocking until servo rotation complete.")
-                l.logData("Target Pos",targetPosition)
-                l.logData("Target Angle",angle)
-                logInfo()
-            }
+//            while(Math.abs(servo.position-targetPosition) < POSITION_BLOCKING_THRESHOLD ){
+//                l.log("Blocking until servo rotation complete.")
+//                l.logData("Target Pos",targetPosition)
+//                l.logData("Target Angle",angle)
+//                logInfo()
+//            }
         }
     }
 

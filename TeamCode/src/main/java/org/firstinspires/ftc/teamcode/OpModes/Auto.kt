@@ -47,7 +47,7 @@ class  Auto: LinearOpMode(){
 
 
         when (startingPosition) {
-            StartingPosition.DEPOT -> field.initialize(22.0, -22.0, 135.0)
+            StartingPosition.DEPOT -> field.initialize(18.0, -18.0, 135.0)
             StartingPosition.CRATER -> field.initialize(-22.0, -22.0, 45.0)
         }
 
@@ -66,7 +66,7 @@ class  Auto: LinearOpMode(){
         telemetry.addLine("INITIALIZATION FINISHED")
         telemetry.update()
 
-        while(!gamepad1.start){
+        while(!gamepad1.start && !opModeIsActive() && !isStopRequested){
             if(gamepad1.a){
                 startingPosition = StartingPosition.DEPOT
 
@@ -170,13 +170,7 @@ class  Auto: LinearOpMode(){
         wsTask.stopThread()
 
     }
-    fun waitForButton(){
-        l.log("Waiting for button...")
-        while(!gamepad1.x && !isStopRequested && opModeIsActive()){
-            sleep(100)
-        }
-        l.log("button pressed!")
-    }
+
     fun threePointGold(): Int {
         val angles: Array<Double> = arrayOf(-23.0, 10.0, 39.0)
         for (i in 1..3) {

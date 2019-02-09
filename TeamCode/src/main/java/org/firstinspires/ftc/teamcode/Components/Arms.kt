@@ -42,7 +42,6 @@ class Arms(val opMode:LinearOpMode):MotorGroup(){
         while (lArm.motor.isBusy && rArm.motor.isBusy && !opMode.isStopRequested && opMode.opModeIsActive()) {
             wait(10)
             lArm.logInfo()
-
         }
 
         stop()
