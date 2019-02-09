@@ -1,14 +1,15 @@
 package org.firstinspires.ftc.teamcode.OpModes
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
+import org.firstinspires.ftc.robotcore.external.Telemetry
 import org.firstinspires.ftc.teamcode.Components.*
-import org.firstinspires.ftc.teamcode.Models.Direction
-import org.firstinspires.ftc.teamcode.Models.PIDConstants
+import org.firstinspires.ftc.teamcode.Models.*
+
+import org.firstinspires.ftc.teamcode.Tasks.WebsocketTask
 import org.firstinspires.ftc.teamcode.Utils.Logger
 import org.firstinspires.ftc.teamcode.Utils.Vision
 
 import org.firstinspires.ftc.teamcode.Utils.getPIDConstantsFromFile
-import org.firstinspires.ftc.teamcode.Utils.wait
 
 @com.qualcomm.robotcore.eventloop.opmode.Autonomous(name = "Auto Crater")
 
@@ -17,62 +18,159 @@ class  AutoCrater: LinearOpMode(){
     val pidRotation: PIDConstants = getPIDConstantsFromFile("pid_rotation.json")
     val pidDrive: PIDConstants = getPIDConstantsFromFile("pid_drive.json")
     var dt:DriveTrain? = null
-
-
+    var vision: Vision? = null
+    val wsTask = WebsocketTask(this)
     init{
         l.log("Initialized")
-
     }
 
 
     override fun runOpMode() {
-
-        l.log("waiting for start")
+        telemetry.addLine("starting init...")
         telemetry.update()
-        dt = DriveTrain(this,drivePIDConstants = pidDrive, rotationPIDConstants = pidRotation)
+        wsTask.start()
+
+        dt = DriveTrain(this,drivePIDConstants = pidDrive, rotationPIDConstants = pidRotation, wss = wsTask)
+
         val arms = Arms(this)
         val armStoppers = ArmStoppers(this)
         val sweeper = Sweeper(this)
         val hook = Hook(this)
         val dumper = Dumper(this,"dumper")
+        val field = Field(dt!!)
+
+
         dumper.setNormalPosition()
         hook.latch()
         armStoppers.lock()
+        arms.setPower(0.0)
+
+
+
+        vision = Vision(this)
+        vision!!.startVision()
+
+        l.log("Init fininshed, waiting for start..")
+
+        telemetry.addLine("INITIALIZATION FINISHED")
+        telemetry.update()
+
+        telemetry.addLine("!!!! ARMED - WAITING FOR START !!!!")
+        telemetry.update()
 
         waitForStart()
 
         l.log("Opmode Started")
         if(opModeIsActive() && !isStopRequested){
+            //drop from lander
             armStoppers.unlock()
-            wait(1000)
-            arms.moveDegrees(Direction.SPIN_CCW, 0.1, -5)
-            l.log("0")
-            wait(1000)
+            arms.moveDegrees(Direction.SPIN_CCW, 0.4, -100)
             hook.unlatch()
-            dt!!.drive(Direction.FORWARD,44.0,10)
-//            arms.moveDegrees(Direction.SPIN_CCW, 0.1, -90)
+            sleep(500)
 
-//            alignToGold()
+            arms.moveDegrees(Direction.SPIN_CCW, 0.15, 25)
+
+
+            val position = threePointGold()
+            val positionIndex = position - 1
+            l.logData("Detected position",position)
+
+            val goldDistance = arrayOf(
+                    26.1, 19.8, 26.1
+            )
+            val goldHeading = arrayOf(-40.6, 0.0, 40.6)
+
+            val avoidanceHeading = -18.4
+            val avoidanceDistance = 49.2
+
+            val depotHeading = -135.0
+            val depotDistance = 54.0
+
+            val craterDistance = 108.0
+
+
+            dt!!.rotateTo(goldHeading[positionIndex])
+            dt!!.drivePID(Direction.BACKWARD, goldDistance[positionIndex])
+
+            dt!!.drivePID(Direction.FORWARD, goldDistance[positionIndex])
+
+            dt!!.rotateTo(avoidanceHeading)
+            dt!!.drivePID(Direction.BACKWARD, avoidanceDistance)
+
+            dt!!.rotateTo(depotHeading)
+            dt!!.drivePID(Direction.BACKWARD, depotDistance)
+
+            dumper.setDumpPosition()
+            sleep(600)
+            dumper.setNormalPosition()
+            sleep(600)
+            dumper.setDumpPosition()
+
+            dt!!.drivePID(Direction.FORWARD, craterDistance)
+
         }
+        if(vision != null) {
+            vision!!.shutDown()
+        }
+        wsTask.stopThread()
 
+    }
+    fun waitForButton(){
+        l.log("Waiting for button...")
+        while(!gamepad1.x && !isStopRequested && opModeIsActive()){
+            sleep(100)
+        }
+        l.log("button pressed!")
+    }
+    fun threePointGold(): Int {
+        val angles: Array<Double> = arrayOf(-23.0, 10.0, 39.0)
+        for (i in 1..3) {
+            dt!!.rotateTo(angles[i-1], 3)
+            val d = vision!!.detectRobust(5, 50)
+            if (d > 0) {
+//                vision!!.shutDown()
+                l.logData("MINERAL DETECTED at position", i)
+                return i
+            }
+        }
+//        vision!!.shutDown()
+        l.log("DID NOT DETECT")
+        return 2 //return middle position when failed to detect
     }
 
     fun alignToGold():Boolean{
-        val vision = Vision(this)
+        var d = vision!!.detectRobust(5, 100)
         val maxRotations = 10
-        val centerPosition = 500
-        val pixelThreshold = 50
-        var detection = -1
-        for(i in 1..maxRotations){
-            dt!!.rotate(Direction.SPIN_CW,5,3)
-            detection = vision.detectRobust(10,1)
-            l.logData("detection",detection)
-            if(Math.abs( detection- centerPosition) < pixelThreshold){
-                l.log("Detected.")
+        val threshold = 450
+        for (i in 1..maxRotations) {
+            l.log("spinning..")
+            dt!!.rotate(Direction.SPIN_CW, 10, 5)
+            d = vision!!.detectRobust(5,100)
+            l.logData("detect",d)
+            if (d > threshold) {
+                vision!!.shutDown()
+                l.logData("MINERAL DETECTED", d)
                 return true
             }
         }
+        vision!!.shutDown()
+        l.logData("DID NOT DETECT", d)
         return false
+//        val vision = Vision(this)
+//        val maxRotations = 10
+//        val centerPosition = 500
+//        val pixelThreshold = 50
+//        var detection = -1
+//        for(i in 1..maxRotations){
+//            dt!!.rotate(Direction.SPIN_CW,5,3)
+//            detection = vision.detectRobust(10,1)
+//            l.logData("detection",detection)
+//            if(Math.abs( detection- centerPosition) < pixelThreshold){
+//                l.log("Detected.")
+//                return true
+//            }
+//        }
+//        return false
     }
 
 }
