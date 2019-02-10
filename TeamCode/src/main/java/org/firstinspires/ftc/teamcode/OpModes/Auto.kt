@@ -58,8 +58,6 @@ class  Auto: LinearOpMode(){
 
 
 
-        vision = Vision(this)
-        vision!!.startVision()
 
         l.log("Init fininshed, waiting for start..")
 
@@ -77,6 +75,10 @@ class  Auto: LinearOpMode(){
             telemetry.addLine("NOT ARMED")
             telemetry.update()
         }
+
+        vision = Vision(this)
+        vision!!.startVision()
+
 
         telemetry.addLine("!!!! ARMED - WAITING FOR START !!!!")
         telemetry.update()

@@ -45,6 +45,8 @@ class  AutoCrater: LinearOpMode(){
         armStoppers.lock()
         arms.setPower(0.0)
 
+        field.initialize(-18.0, -18.0, 45.0)
+
 
 
         vision = Vision(this)
@@ -54,6 +56,14 @@ class  AutoCrater: LinearOpMode(){
 
         telemetry.addLine("INITIALIZATION FINISHED")
         telemetry.update()
+        while(!gamepad1.start && !opModeIsActive() && !isStopRequested){
+            telemetry.addLine("NOT ARMED")
+            telemetry.update()
+        }
+
+        vision = Vision(this)
+        vision!!.startVision()
+
 
         telemetry.addLine("!!!! ARMED - WAITING FOR START !!!!")
         telemetry.update()
@@ -66,7 +76,7 @@ class  AutoCrater: LinearOpMode(){
             armStoppers.unlock()
             arms.moveDegrees(Direction.SPIN_CCW, 0.4, -100)
             hook.unlatch()
-            sleep(500)
+            sleep(100)
 
             arms.moveDegrees(Direction.SPIN_CCW, 0.15, 25)
 
@@ -75,30 +85,31 @@ class  AutoCrater: LinearOpMode(){
             val positionIndex = position - 1
             l.logData("Detected position",position)
 
-            val goldDistance = arrayOf(
-                    26.1, 19.8, 26.1
+            val goldPositions = arrayOf(
+                    Coordinate(-24, -48), //position 1 (x,y)
+                    Coordinate(-36, -36), //position 2 (x,y)
+                    Coordinate(-48, -24)  //position 3 (x,y)
             )
-            val goldHeading = arrayOf(-40.6, 0.0, 40.6)
 
-            val avoidanceHeading = -18.4
-            val avoidanceDistance = 49.2
+            val directions = arrayOf(
+                    Direction.BACKWARD,
+                    Direction.BACKWARD,
+                    Direction.BACKWARD
+            )
+            val directionsSecondDrive = arrayOf(
+                    Direction.BACKWARD,
+                    Direction.BACKWARD,
+                    Direction.BACKWARD
+            )
+            val avoidanceWaypointCoordinate  =Coordinate(-12,-66)
 
-            val depotHeading = -135.0
-            val depotDistance = 54.0
+            val markerDumperCoordinate =  Coordinate(54,-54)
 
-            val craterDistance = 108.0
-
-
-            dt!!.rotateTo(goldHeading[positionIndex])
-            dt!!.drivePID(Direction.BACKWARD, goldDistance[positionIndex])
-
-            dt!!.drivePID(Direction.FORWARD, goldDistance[positionIndex])
-
-            dt!!.rotateTo(avoidanceHeading)
-            dt!!.drivePID(Direction.BACKWARD, avoidanceDistance)
-
-            dt!!.rotateTo(depotHeading)
-            dt!!.drivePID(Direction.BACKWARD, depotDistance)
+            field
+                    .moveTo(goldPositions[positionIndex], Direction.BACKWARD)
+                    .moveTo(Coordinate(-18, -18), Direction.FORWARD)
+                    .moveTo(avoidanceWaypointCoordinate, Direction.BACKWARD)
+                    .moveTo(markerDumperCoordinate, Direction.BACKWARD)
 
             dumper.setDumpPosition()
             sleep(600)
@@ -106,7 +117,13 @@ class  AutoCrater: LinearOpMode(){
             sleep(600)
             dumper.setDumpPosition()
 
-            dt!!.drivePID(Direction.FORWARD, craterDistance)
+//            val avoidanceWaypointCoordinate = Coordinate(66,-24)
+//            val craterCoordinate =            Coordinate(64,35)
+
+            val craterCoordinate  = Coordinate(-66,-35)
+            field.moveTo(avoidanceWaypointCoordinate,Direction.FORWARD)
+
+
 
         }
         if(vision != null) {
